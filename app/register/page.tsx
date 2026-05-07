@@ -75,11 +75,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] mt-16 overflow-hidden">
-      <div className="relative z-10 w-full h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+    <div className="min-h-screen pt-16 overflow-x-hidden">
+      <div className="relative z-10 w-full min-h-[calc(100vh-4rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-4rem)]">
           {/* Imagen - ocupa toda la altura disponible */}
-          <div className="relative hidden lg:block h-full">
+          <div className="relative hidden lg:block min-h-[calc(100vh-4rem)]">
             <Image
               src="/placeholder.avif"
               alt="Plantas exclusivas"
@@ -94,20 +94,20 @@ export default function RegisterPage() {
           </div>
 
           {/* Formulario - scroll independiente si es necesario */}
-          <div className="flex items-center justify-center bg-gradient-to-br from-emerald-600 to-green-700 h-full overflow-y-auto p-4 sm:p-8">
-            <div className="w-full max-w-md py-8">
+          <div className="flex items-center justify-center bg-gradient-to-br from-emerald-600 to-green-700 min-h-[calc(100vh-4rem)] overflow-y-auto p-4 sm:p-6">
+            <div className="w-full max-w-sm py-4 sm:py-6">
               {success ? (
-                <div className="flex flex-col items-center justify-center text-center py-12 space-y-4">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <Check className="h-8 w-8 text-white" />
+                <div className="flex flex-col items-center justify-center text-center py-8 space-y-3">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+                    <Check className="h-7 w-7 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">¡Cuenta creada!</h2>
-                  <p className="text-white/80 max-w-xs">
+                  <h2 className="text-xl font-bold text-white">¡Cuenta creada!</h2>
+                  <p className="text-sm text-white/80 max-w-xs">
                     Revisa tu email para confirmar tu cuenta antes de iniciar sesión.
                   </p>
                   <Link
                     href="/login"
-                    className="mt-4 px-8 py-3 bg-white text-emerald-700 font-bold rounded-xl hover:bg-emerald-50 transition-colors flex items-center gap-2"
+                    className="mt-2 px-6 py-2.5 bg-white text-emerald-700 font-bold text-sm rounded-xl hover:bg-emerald-50 transition-colors flex items-center gap-2"
                   >
                     Ir a Iniciar Sesión
                     <ArrowRight className="h-4 w-4" />
@@ -115,13 +115,13 @@ export default function RegisterPage() {
                 </div>
               ) : (
               <>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label htmlFor="nombre" className="block text-base font-bold text-white mb-2 uppercase tracking-wide">
+                  <label htmlFor="nombre" className="block text-sm font-semibold text-white mb-1.5">
                     Nombre Completo
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
                     <input
                       id="nombre"
                       name="nombre"
@@ -129,18 +129,18 @@ export default function RegisterPage() {
                       value={formData.nombre}
                       onChange={handleChange}
                       placeholder="Tu nombre"
-                      className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
+                      className="w-full pl-9 pr-3 py-2.5 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-base font-bold text-white mb-2 uppercase tracking-wide">
+                  <label htmlFor="email" className="block text-sm font-semibold text-white mb-1.5">
                     Correo Electrónico
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
                     <input
                       id="email"
                       name="email"
@@ -148,18 +148,18 @@ export default function RegisterPage() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="tu@email.com"
-                      className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
+                      className="w-full pl-9 pr-3 py-2.5 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-base font-bold text-white mb-2 uppercase tracking-wide">
+                  <label htmlFor="password" className="block text-sm font-semibold text-white mb-1.5">
                     Contraseña
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
                     <input
                       id="password"
                       name="password"
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-12 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
+                      className="w-full pl-9 pr-10 py-2.5 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
                       required
                       minLength={8}
                     />
@@ -176,17 +176,17 @@ export default function RegisterPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-base font-bold text-white mb-2 uppercase tracking-wide">
+                  <label htmlFor="confirmPassword" className="block text-sm font-semibold text-white mb-1.5">
                     Confirmar Contraseña
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
                     <input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -194,7 +194,7 @@ export default function RegisterPage() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-12 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
+                      className="w-full pl-9 pr-10 py-2.5 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-colors"
                       required
                       minLength={8}
                     />
@@ -203,13 +203,13 @@ export default function RegisterPage() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 space-y-2">
-                  <p className="text-sm text-white font-bold uppercase tracking-wide mb-2">La contraseña debe contener:</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 space-y-1.5">
+                  <p className="text-xs text-white font-semibold mb-1">La contraseña debe contener:</p>
                   {passwordRules.map((rule) => {
                     const ok = rule.test(formData.password)
                     return (
@@ -221,17 +221,17 @@ export default function RegisterPage() {
                   })}
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2">
                   <input
                     type="checkbox"
                     id="terms"
                     required
-                    className="mt-1 w-4 h-4 rounded border-white/30 bg-white/10 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                    className="mt-0.5 w-4 h-4 rounded border-white/30 bg-white/10 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
                   />
-                  <label htmlFor="terms" className="text-base text-white font-medium">
+                  <label htmlFor="terms" className="text-xs text-white/90">
                     Acepto los{' '}
                     <Link href="/terminos" className="text-white hover:text-white/90 underline">
-                      términos y condiciones
+                      términos
                     </Link>{' '}
                     y la{' '}
                     <Link href="/privacidad" className="text-white hover:text-white/90 underline">
@@ -241,29 +241,29 @@ export default function RegisterPage() {
                 </div>
 
                 {error && (
-                  <p className="text-sm text-white bg-red-500/30 border border-red-400/40 rounded-lg px-3 py-2">{error}</p>
+                  <p className="text-xs text-white bg-red-500/30 border border-red-400/40 rounded-lg px-3 py-2">{error}</p>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 disabled:bg-white/50 disabled:cursor-not-allowed font-bold text-lg rounded-xl transition-all hover:shadow-xl hover:shadow-white/20 flex items-center justify-center gap-2 uppercase tracking-wide"
+                  className="w-full py-3 bg-white text-emerald-700 hover:bg-emerald-50 disabled:bg-white/50 disabled:cursor-not-allowed font-bold text-sm rounded-xl transition-all hover:shadow-xl hover:shadow-white/20 flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <span className="w-5 h-5 border-2 border-emerald-700/40 border-t-emerald-700 rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-emerald-700/40 border-t-emerald-700 rounded-full animate-spin" />
                   ) : (
                     <>
                       Crear Cuenta
-                      <ArrowRight className="h-5 w-5" />
+                      <ArrowRight className="h-4 w-4" />
                     </>
                   )}
                 </button>
               </form>
 
-              <p className="text-center mt-6 text-white/80">
+              <p className="text-center mt-4 text-sm text-white/80">
                 ¿Ya tienes una cuenta?{' '}
                 <Link href="/login" className="text-white hover:text-white/90 font-medium transition-colors underline">
-                  Inicia sesión aquí
+                  Inicia sesión
                 </Link>
               </p>
               </>

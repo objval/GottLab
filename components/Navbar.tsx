@@ -148,23 +148,23 @@ export default function Navbar() {
             </div>
 
             {/* Mobile buttons */}
-            <div className="lg:hidden col-start-3 justify-self-end flex items-center gap-2">
+            <div className="lg:hidden col-start-3 justify-self-end flex items-center gap-3">
               <CarritoDropdown isMobile />
               <button
                 onClick={toggleTheme}
-                className="relative w-10 h-5 rounded-full transition-colors duration-300 flex items-center px-0.5"
+                className="relative w-9 h-5 rounded-full transition-colors duration-300 flex items-center px-0.5"
                 style={{ backgroundColor: theme === 'dark' ? '#059669' : '#d1d5db' }}
                 aria-label="Cambiar tema"
               >
-                <span className={`w-4 h-4 bg-white rounded-full shadow-md flex items-center justify-center transition-transform duration-300 ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'}`}>
+                <span className={`w-4 h-4 bg-white rounded-full shadow-md flex items-center justify-center transition-transform duration-300 ${theme === 'dark' ? 'translate-x-4' : 'translate-x-0'}`}>
                   {theme === 'dark' ? <Moon className="h-2.5 w-2.5 text-emerald-600" /> : <Sun className="h-2.5 w-2.5 text-amber-500" />}
                 </span>
               </button>
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className={`p-2 transition-colors ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'}`}
+                className={`p-1.5 transition-colors ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'}`}
               >
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
               </button>
             </div>
           </div>
