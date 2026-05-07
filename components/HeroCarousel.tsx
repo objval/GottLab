@@ -72,7 +72,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
 
   return (
     <div 
-      className={`relative min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen overflow-hidden [@media(orientation:landscape)_and_(max-width:1024px)]:overflow-y-auto touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
+      className={`relative h-[100svh] overflow-hidden touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -98,49 +98,49 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
           >
-            {/* Content Container */}
-            <div className="relative z-10 min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen flex items-end [@media(orientation:landscape)_and_(max-width:1024px)]:items-center lg:items-center px-4 sm:px-6 lg:px-12 pt-20 [@media(orientation:landscape)_and_(max-width:1024px)]:pt-20 pb-8 lg:pt-0 lg:pb-0">
-              <div className="w-full max-w-7xl mx-auto flex flex-col [@media(orientation:landscape)_and_(max-width:1024px)]:flex-row [@media(orientation:landscape)_and_(max-width:1024px)]:items-center [@media(orientation:landscape)_and_(max-width:1024px)]:gap-6 lg:flex-row lg:items-center gap-4 lg:gap-8">
-                {/* Text Content */}
-                <div className="lg:w-[55%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[55%] text-green-900 mt-2 lg:mt-0 [@media(orientation:landscape)_and_(max-width:1024px)]:mt-0 space-y-1.5 lg:space-y-4">
+            {/* Content Container - Desktop */}
+            <div className="hidden lg:flex relative z-10 h-[100svh] items-center px-12">
+              <div className="w-full max-w-7xl mx-auto flex flex-row items-center gap-8">
+                {/* Text Content - Desktop */}
+                <div className="w-[55%] text-green-900 space-y-4">
                   <div className="flex items-center gap-2">
-                    <Leaf className="w-5 h-5 lg:w-6 lg:h-5 text-green-600" />
-                    <span className="text-sm lg:text-base font-semibold uppercase tracking-widest text-green-700">
+                    <Leaf className="w-6 h-5 text-green-600" />
+                    <span className="text-base font-semibold uppercase tracking-widest text-green-700">
                       {categoria || 'Nueva llegada'}
                     </span>
                   </div>
                   
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl max-[500px]:text-4xl [@media(orientation:landscape)_and_(max-width:1024px)]:text-3xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+                  <h1 className="text-7xl xl:text-8xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
                     {slide.nombre}
                   </h1>
 
                   {slide.nombre_cientifico && (
-                    <p className="text-sm lg:text-base text-green-700/70 italic">{slide.nombre_cientifico}</p>
+                    <p className="text-base text-green-700/70 italic">{slide.nombre_cientifico}</p>
                   )}
                   
                   {slide.descripcion && (
-                    <p className="text-sm lg:text-lg text-green-800/90 max-w-lg leading-relaxed line-clamp-2">
+                    <p className="text-lg text-green-800/90 max-w-lg leading-relaxed line-clamp-2">
                       {slide.descripcion}
                     </p>
                   )}
                   
                   {/* Feature Pills */}
-                  <div className="flex flex-wrap gap-1.5 mb-2 lg:mb-8 [@media(orientation:landscape)_and_(max-width:1024px)]:mb-2">
+                  <div className="flex flex-wrap gap-1.5 mb-8">
                     {slide.stock_total > 0 && (
-                      <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                      <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-4 py-2 rounded-full text-sm font-medium text-green-700 shadow-sm">
                         En Stock
                       </span>
                     )}
-                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-4 py-2 rounded-full text-sm font-medium text-green-700 shadow-sm">
                       Envío seguro
                     </span>
-                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-4 py-2 rounded-full text-sm font-medium text-green-700 shadow-sm">
                       Cultivo in vitro
                     </span>
                   </div>
 
                   {/* Desktop Buttons */}
-                  <div className="hidden lg:flex gap-4">
+                  <div className="flex gap-4">
                     <Link 
                       href={`/productos/${slide.id_producto}`}
                       className="inline-flex items-center justify-center px-8 py-4 bg-stone-800 text-white font-semibold rounded-xl hover:bg-stone-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
@@ -157,67 +157,130 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                   </div>
                 </div>
 
-                {/* Product Card */}
-                <div className="lg:w-[45%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[45%] flex justify-center">
-                  <div className="relative w-full max-w-sm [@media(orientation:landscape)_and_(max-width:1024px)]:max-w-[220px] lg:max-w-md">
-                    <div className="absolute inset-0 -m-4 lg:-m-8">
+                {/* Product Card - Desktop */}
+                <div className="w-[45%] flex justify-center">
+                  <div className="relative w-full max-w-md">
+                    <div className="absolute inset-0 -m-8">
                       <div className="absolute inset-0 bg-gradient-radial from-white/60 via-white/30 to-transparent rounded-3xl blur-2xl" />
                       <div className="absolute top-1/4 left-0 w-32 h-16 bg-white/40 rounded-full blur-xl" />
                       <div className="absolute top-1/3 right-0 w-24 h-12 bg-white/30 rounded-full blur-xl" />
                       <div className="absolute bottom-1/4 left-1/4 w-40 h-20 bg-white/50 rounded-full blur-2xl" />
                     </div>
                     
-                    <div className="relative bg-white/50 backdrop-blur-md rounded-2xl lg:rounded-3xl p-4 lg:p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
+                    <div className="relative bg-white/50 backdrop-blur-md rounded-3xl p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
                       {/* Badge */}
-                      <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 bg-green-500 text-white px-3 py-1 lg:px-4 lg:py-1.5 rounded-full font-semibold text-xs lg:text-sm shadow-lg flex items-center gap-1 z-20">
-                        <Sparkles className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-1.5 rounded-full font-semibold text-sm shadow-lg flex items-center gap-1 z-20">
+                        <Sparkles className="w-4 h-4" />
                         Nuevo
                       </div>
                       
-                      <div className="relative aspect-square rounded-xl lg:rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-4 border-white/80 shadow-inner">
+                      <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-4 border-white/80 shadow-inner">
                         <Image
                           src={"/placeholder.avif"}
                           alt={slide.nombre}
                           fill
                           className="object-cover"
                           priority={index === 0}
-                          sizes="(max-width: 768px) 280px, 400px"
+                          sizes="400px"
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                    {/* Slide Indicators - mobile */}
-                    <div className="flex justify-center gap-2 mt-4 lg:hidden">
-                      {slides.map((_: any, idx: number) => (
-                        <button
-                          key={idx}
-                          onClick={() => goToSlide(idx)}
-                          className={`transition-all duration-300 rounded-full ${
-                            idx === currentSlide 
-                              ? 'w-6 h-2 bg-stone-700' 
-                              : 'w-2 h-2 bg-stone-400/60 hover:bg-stone-500'
-                          }`}
-                        />
-                      ))}
+            {/* Content Container - Mobile */}
+            <div className="lg:hidden relative z-10 h-[100svh] flex flex-col">
+              {/* Title Section - Centered vertically in available space */}
+              <div className="flex-1 flex items-center px-5 pt-20">
+                <div className="text-green-900 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Leaf className="w-5 h-5 text-green-600" />
+                    <span className="text-sm font-semibold uppercase tracking-widest text-green-700">
+                      {categoria || 'Nueva llegada'}
+                    </span>
+                  </div>
+                  
+                  <h1 className="text-4xl sm:text-5xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+                    {slide.nombre}
+                  </h1>
+
+                  {slide.nombre_cientifico && (
+                    <p className="text-sm text-green-700/70 italic">{slide.nombre_cientifico}</p>
+                  )}
+                  
+                  {/* Feature Pills */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {slide.stock_total > 0 && (
+                      <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1 rounded-full text-xs font-medium text-green-700 shadow-sm">
+                        En Stock
+                      </span>
+                    )}
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1 rounded-full text-xs font-medium text-green-700 shadow-sm">
+                      Envío seguro
+                    </span>
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1 rounded-full text-xs font-medium text-green-700 shadow-sm">
+                      Cultivo in vitro
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Section - Image and Buttons fixed at bottom */}
+              <div className="px-5 pb-6">
+                {/* Product Image */}
+                <div className="relative w-full max-w-xs mx-auto mb-4">
+                  <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-3 border-2 border-white/70 shadow-2xl">
+                    {/* Badge */}
+                    <div className="absolute -top-2 -right-2 bg-green-500 text-white px-3 py-1 rounded-full font-semibold text-xs shadow-lg flex items-center gap-1 z-20">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Nuevo
                     </div>
-
-                    {/* Mobile Action Buttons - directly below image */}
-                    <div className="lg:hidden flex gap-2 mt-3 w-full">
-                      <Link 
-                        href={`/productos/${slide.id_producto}`}
-                        className="flex items-center justify-center flex-1 px-4 py-3 bg-stone-800 text-white font-semibold rounded-xl shadow-lg active:scale-[0.98] transition-transform text-sm"
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-1" />
-                        Ver Producto
-                      </Link>
-                      <Link 
-                        href="/productos"
-                        className="flex items-center justify-center flex-1 px-4 py-3 bg-white/90 backdrop-blur-sm text-stone-800 font-semibold rounded-xl border-2 border-stone-200 active:scale-[0.98] transition-transform text-sm"
-                      >
-                        Catálogo
-                      </Link>
+                    
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-2 border-white/80 shadow-inner">
+                      <Image
+                        src={"/placeholder.avif"}
+                        alt={slide.nombre}
+                        fill
+                        className="object-cover"
+                        priority={index === 0}
+                        sizes="320px"
+                      />
                     </div>
                   </div>
+
+                  {/* Slide Indicators */}
+                  <div className="flex justify-center gap-2 mt-3">
+                    {slides.map((_: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => goToSlide(idx)}
+                        className={`transition-all duration-300 rounded-full ${
+                          idx === currentSlide 
+                            ? 'w-6 h-2 bg-stone-700' 
+                            : 'w-2 h-2 bg-stone-400/60 hover:bg-stone-500'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons - Large and prominent */}
+                <div className="flex gap-3 w-full">
+                  <Link 
+                    href={`/productos/${slide.id_producto}`}
+                    className="flex items-center justify-center flex-1 px-5 py-4 bg-stone-800 text-white font-bold rounded-2xl shadow-lg active:scale-[0.98] transition-transform text-base"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Ver Producto
+                  </Link>
+                  <Link 
+                    href="/productos"
+                    className="flex items-center justify-center flex-1 px-5 py-4 bg-white/90 backdrop-blur-sm text-stone-800 font-bold rounded-2xl border-2 border-stone-300 active:scale-[0.98] transition-transform text-base"
+                  >
+                    Catálogo
+                  </Link>
                 </div>
               </div>
             </div>
