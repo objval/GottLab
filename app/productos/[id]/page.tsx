@@ -1,492 +1,254 @@
-'use client'
-
-import { useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left'
-import ShoppingCart from 'lucide-react/dist/esm/icons/shopping-cart'
-import Heart from 'lucide-react/dist/esm/icons/heart'
-import Star from 'lucide-react/dist/esm/icons/star'
-import Clock from 'lucide-react/dist/esm/icons/clock'
-import Leaf from 'lucide-react/dist/esm/icons/leaf'
-import Check from 'lucide-react/dist/esm/icons/check'
-import Truck from 'lucide-react/dist/esm/icons/truck'
-import Shield from 'lucide-react/dist/esm/icons/shield'
-import Award from 'lucide-react/dist/esm/icons/award'
+import { notFound } from 'next/navigation'
+import { getProductoById, getProductos } from '@/lib/actions/productos'
+import { Leaf, Truck, Shield, Package, ArrowLeft, ShoppingCart, BadgeCheck, Droplets, Sun, Thermometer } from 'lucide-react'
+import ProductCard from '@/components/ProductCard'
+import PageTransition from '@/components/PageTransition'
 
-// Datos de ejemplo - en producción vendrían de API/DB
-const productos = [
-  {
-    id: 1,
-    nombre: 'Orquídea Phalaenopsis Alba',
-    nombreCientifico: 'Phalaenopsis amabilis',
-    precio: 49.99,
-    precioOriginal: 69.99,
-    categoria: 'orquideas',
-    stock: 8,
-    disponibilidad: 'stock',
-    rating: 4.8,
-    reseñas: 12,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Exclusivo', 'Raro'],
-    descripcionCorta: 'Variedad alba con flores blancas puras',
-    descripcionCompleta: 'Una de las orquídeas más elegantes y apreciadas para colecciones. Sus flores blancas puras y perfectamente simétricas la convierten en una joya botánica. Cultivada in vitro para garantizar salud y vigor.',
-    caracteristicas: ['Flores blancas puras', 'Altura: 30-40cm', 'Fácil cuidado', 'Floración prolongada'],
-    cuidados: ['Luz indirecta brillante', 'Riego moderado', 'Humedad 60-70%', 'Temperatura 18-25°C'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-  {
-    id: 2,
-    nombre: 'Dionaea Muscipa Red',
-    nombreCientifico: 'Dionaea muscipula',
-    precio: 35.00,
-    categoria: 'carnivoras',
-    stock: 15,
-    disponibilidad: 'stock',
-    rating: 4.9,
-    reseñas: 8,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Popular'],
-    descripcionCorta: 'Atrapamoscas de interior roja intensa',
-    descripcionCompleta: 'Fascinante planta carnívora con trampas de color rojo intenso. Perfecta para coleccionistas que buscan algo único y llamativo. Cada trampa se cierra en segundos cuando presa un insecto.',
-    caracteristicas: ['Trampas rojas', 'Tamaño: 10-15cm', 'Dormancia invernal', 'Alta eficiencia'],
-    cuidados: ['Luz directa 4-6 horas', 'Agua destilada', 'Sustrato sphagnum', 'Sin fertilizantes'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-  {
-    id: 3,
-    nombre: 'Bonsái Ficus Retusa',
-    nombreCientifico: 'Ficus retusa',
-    precio: 89.99,
-    precioOriginal: 120.00,
-    categoria: 'bonsai',
-    stock: 3,
-    disponibilidad: 'stock',
-    rating: 4.7,
-    reseñas: 23,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Edad: 5 años'],
-    descripcionCorta: 'Bonsái clásico con 5 años de cultivo',
-    descripcionCompleta: 'Bonsái tradicional con 5 años de cuidados especializados. Tronco bien desarrollado y follaje denso que crea una silueta clásica perfecta. Incluye maceta cerámica premium.',
-    caracteristicas: ['Edad: 5 años', 'Altura: 25cm', 'Maceta incluida', 'Estilo informal upright'],
-    cuidados: ['Luz brillante indirecta', 'Riego cuando se seque el sustrato', 'Poda regular', 'Fertilizar mensualmente'],
-    tiempoEntrega: '3-4 días hábiles'
-  },
-  {
-    id: 4,
-    nombre: 'Echeveria Perle von Nürnberg',
-    nombreCientifico: 'Echeveria perle',
-    precio: 22.50,
-    categoria: 'cactus',
-    stock: 25,
-    disponibilidad: 'stock',
-    rating: 4.6,
-    reseñas: 18,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Fácil'],
-    descripcionCorta: 'Suculenta de color lila perla',
-    descripcionCompleta: 'Híbrido espectacular con hojas en forma de perla de color lila rosado. Perfecta para principiantes debido a su fácil cuidado y resistencia. Forma rosetas perfectas de hasta 20cm.',
-    caracteristicas: ['Color lila perla', 'Roseta: 20cm', 'Bajo mantenimiento', 'Multiplica fácilmente'],
-    cuidados: ['Luz directa 6 horas', 'Riego escaso', 'Drenaje excelente', 'Proteger de heladas'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-  {
-    id: 5,
-    nombre: 'Orquídea GottLab Hybrid #1',
-    nombreCientifico: 'Ophrys × gottlab',
-    precio: 149.99,
-    precioOriginal: 249.99,
-    categoria: 'orquideas',
-    stock: 0,
-    disponibilidad: 'preventa',
-    rating: 5.0,
-    reseñas: 3,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Preventa', 'Exclusivo'],
-    descripcionCorta: 'Híbrido exclusivo de laboratorio',
-    descripcionCompleta: 'Creación exclusiva de GottLab desarrollada durante 3 años de investigación. Flores con patrones únicos y colores vibrantes que no existen en la naturaleza. Limitada a 50 unidades numeradas.',
-    caracteristicas: ['Híbrido único', 'Número certificado', 'Edición limitada', 'Patrones exclusivos'],
-    cuidados: ['Cuidado especializado', 'Kit de mantenimiento incluido', 'Soporte técnico', 'Garantía extendida'],
-    tiempoEntrega: '10-15 días hábiles'
-  },
-  {
-    id: 6,
-    nombre: 'Nepenthes Ventrata',
-    nombreCientifico: 'Nepenthes × ventrata',
-    precio: 45.00,
-    categoria: 'carnivoras',
-    stock: 6,
-    disponibilidad: 'stock',
-    rating: 4.5,
-    reseñas: 15,
-    imagen: '/placeholder.avif',
-    etiquetas: [],
-    descripcionCorta: 'Planta jarra híbrida resistente',
-    descripcionCompleta: 'Híbrido robusto y fácil de cuidar que produce jarras de hasta 15cm. Perfecta para principiantes en plantas carnívoras. Muy resistente y adaptable a diferentes condiciones.',
-    caracteristicas: ['Jarras: 15cm', 'Híbrido resistente', 'Alta producción', 'Adaptable'],
-    cuidados: ['Luz brillante', 'Alta humedad', 'Agua pura', 'Temperatura cálida'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-  {
-    id: 7,
-    nombre: 'Helecho Asplenium Nidus',
-    nombreCientifico: 'Asplenium nidus',
-    precio: 28.99,
-    categoria: 'helechos',
-    stock: 12,
-    disponibilidad: 'stock',
-    rating: 4.4,
-    reseñas: 9,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Interior'],
-    descripcionCorta: 'Helecho nido de ave elegante',
-    descripcionCompleta: 'Helecho tropical con frondas que forman una copa perfecta en forma de nido. Ideal para interiores con luz indirecta. Agrega un toque tropical elegante a cualquier espacio.',
-    caracteristicas: ['Frondas: 60cm', 'Interior', 'Purificador de aire', 'Bajo mantenimiento'],
-    cuidados: ['Luz indirecta', 'Humedad alta', 'Sustrato orgánico', 'Evitar corrientes'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-  {
-    id: 8,
-    nombre: 'Anubias Barteri',
-    nombreCientifico: 'Anubias barteri',
-    precio: 19.99,
-    categoria: 'acuaticas',
-    stock: 20,
-    disponibilidad: 'stock',
-    rating: 4.7,
-    reseñas: 11,
-    imagen: '/placeholder.avif',
-    etiquetas: ['Acuática'],
-    descripcionCorta: 'Planta acuática de hojas anchas',
-    descripcionCompleta: 'Planta acuática versátil perfecta para acuarios y terrarios. Hojas anchas y brillantes de color verde oscuro. Crecimiento lento pero muy resistente.',
-    caracteristicas: ['Hoja: 15cm', 'Acuática', 'Rústica', 'Múltiple uso'],
-    cuidados: ['Luz baja-media', 'CO2 opcional', 'Temperatura 22-28°C', 'pH neutro'],
-    tiempoEntrega: '2-3 días hábiles'
-  },
-]
+export default async function ProductoDetallePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const producto = await getProductoById(id)
 
-export default function ProductoDetallePage() {
-  const params = useParams()
-  const router = useRouter()
-  const [cantidad, setCantidad] = useState(1)
-  const [favorito, setFavorito] = useState(false)
-  
-  const id = parseInt(params.id as string)
-  const producto = productos.find(p => p.id === id)
-  
   if (!producto) {
-    return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-stone-800 mb-4">Producto no encontrado</h1>
-          <Link 
-            href="/productos"
-            className="text-emerald-600 hover:text-emerald-700 font-medium"
-          >
-            Volver a productos
-          </Link>
-        </div>
-      </div>
-    )
+    notFound()
   }
-  
-  const isPreventa = producto.disponibilidad === 'preventa'
-  const descuento = producto.precioOriginal ? Math.round((1 - producto.precio / producto.precioOriginal) * 100) : 0
-  
+
+  const enStock = producto.stock_total > 0
+  const stockBajo = producto.stock_total > 0 && producto.stock_total <= 5
+  const cats = producto.categorias as any
+  const categoria = Array.isArray(cats) ? (cats[0]?.nombre || '') : (cats?.nombre || '')
+  const imagenPrincipal = producto.imagenes_productos?.find((img: any) => img.es_principal)?.url
+    || producto.imagenes_productos?.[0]?.url
+    || '/placeholder.avif'
+  const imagenes = producto.imagenes_productos?.length > 0
+    ? producto.imagenes_productos.sort((a: any, b: any) => (a.orden || 0) - (b.orden || 0))
+    : [{ url: '/placeholder.avif' }]
+
+  // Productos relacionados (misma categoría)
+  const { productos: relacionados } = await getProductos({
+    categoria,
+    porPagina: 4,
+  })
+  const relacionadosFiltrados = relacionados.filter((p: any) => p.id_producto !== producto.id_producto).slice(0, 4)
+
   return (
-    <div className="min-h-screen bg-stone-50">
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center text-sm text-stone-600">
-            <Link href="/" className="hover:text-emerald-600">Inicio</Link>
-            <span className="mx-2">/</span>
-            <Link href="/productos" className="hover:text-emerald-600">Productos</Link>
-            <span className="mx-2">/</span>
-            <span className="text-stone-800 font-medium">{producto.nombre}</span>
+    <PageTransition>
+    <div className="min-h-screen bg-white dark:bg-stone-950">
+      {/* Top bar */}
+      <div className="border-b border-gray-100 dark:border-stone-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 pt-20">
+          <nav className="flex items-center gap-2 text-sm text-gray-500">
+            <Link href="/productos" className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 font-medium">
+              <ArrowLeft className="h-4 w-4" />
+              Volver
+            </Link>
+            <span>/</span>
+            <span className="capitalize">{categoria}</span>
+            <span>/</span>
+            <span className="text-gray-900 dark:text-stone-200 font-medium truncate">{producto.nombre}</span>
           </nav>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Imagen */}
-          <div className="space-y-4">
-            <div className="relative aspect-square bg-stone-100 rounded-2xl overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-16">
+
+          {/* GALERÍA */}
+          <div className="space-y-3 sm:space-y-4">
+            <div className="relative aspect-square sm:aspect-[4/5] bg-stone-50 rounded-2xl sm:rounded-3xl overflow-hidden">
               <Image
-                src={producto.imagen}
+                src={'/placeholder.avif'}
                 alt={producto.nombre}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
-              
-              {/* Badge de tipo */}
-              <div className="absolute top-4 left-4">
-                <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold ${
-                  isPreventa 
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg' 
-                    : 'bg-emerald-600 text-white shadow-lg'
-                }`}>
-                  {isPreventa ? (
-                    <>
-                      <Clock className="h-4 w-4" />
-                      PREVENTA
-                    </>
-                  ) : (
-                    <>
-                      <Leaf className="h-4 w-4" />
-                      DISPONIBLE
-                    </>
-                  )}
-                </span>
-              </div>
-
-              {/* Botón favorito */}
-              <button
-                onClick={() => setFavorito(!favorito)}
-                className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
-              >
-                <Heart className={`h-5 w-5 ${favorito ? 'fill-red-500 text-red-500' : 'text-stone-600'}`} />
-              </button>
-
-              {/* Badge de stock bajo */}
-              {producto.stock > 0 && producto.stock <= 5 && (
-                <div className="absolute bottom-4 left-4 bg-red-500 text-white px-3 py-1 text-sm font-medium rounded-full">
-                  ¡Solo {producto.stock} unidades!
+              {stockBajo && (
+                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full animate-pulse">
+                  ¡Últimas {producto.stock_total} unidades!
+                </div>
+              )}
+              {!enStock && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <span className="bg-white text-black font-bold text-lg px-6 py-3 rounded-full">
+                    Agotado
+                  </span>
                 </div>
               )}
             </div>
 
-            {/* Miniaturas */}
-            <div className="grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-stone-100 rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-colors cursor-pointer">
-                  <Image
-                    src={producto.imagen}
-                    alt={`${producto.nombre} - Vista ${i}`}
-                    fill
-                    className="object-cover"
-                    sizes="150px"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Información */}
-          <div className="space-y-6">
-            {/* Header */}
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-stone-800 mb-2">
-                {producto.nombre}
-              </h1>
-              <p className="text-lg text-stone-500 italic mb-4">
-                {producto.nombreCientifico}
-              </p>
-              
-              {/* Etiquetas */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {producto.etiquetas.map((etiqueta, i) => (
-                  <span 
-                    key={i}
-                    className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      etiqueta === 'Preventa'
-                        ? 'bg-stone-800 text-white'
-                        : etiqueta === 'Exclusivo'
-                        ? 'bg-stone-600 text-white'
-                        : 'bg-stone-100 text-stone-700'
-                    }`}
-                  >
-                    {etiqueta}
-                  </span>
+            {/* Thumbnails */}
+            {imagenes.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {imagenes.slice(0, 4).map((img: any, i: number) => (
+                  <div key={i} className="relative aspect-square bg-stone-50 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-emerald-500 transition-colors cursor-pointer">
+                    <Image
+                      src={'/placeholder.avif'}
+                      alt={`${producto.nombre} - ${i + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="120px"
+                    />
+                  </div>
                 ))}
               </div>
+            )}
+          </div>
 
-              {/* Rating */}
-              <div className="flex items-center gap-3">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${
-                        i < Math.floor(producto.rating) ? 'text-amber-400 fill-amber-400' : 'text-stone-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-stone-600">{producto.rating} ({producto.reseñas} reseñas)</span>
-              </div>
+          {/* INFO */}
+          <div className="flex flex-col justify-center space-y-4 sm:space-y-6">
+            {/* Categoría badge */}
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full">
+                <Leaf className="h-3.5 w-3.5" />
+                {categoria}
+              </span>
+            </div>
+
+            {/* Nombre */}
+            <div>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-black dark:text-white leading-tight">
+                {producto.nombre}
+              </h1>
+              {producto.nombre_cientifico && (
+                <p className="text-lg text-gray-400 italic mt-2">{producto.nombre_cientifico}</p>
+              )}
             </div>
 
             {/* Precio */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-emerald-600">
-                ${producto.precio.toFixed(2)}
+            <div className="flex items-end gap-3">
+              <span className="text-3xl sm:text-5xl font-black text-black dark:text-white">
+                ${Number(producto.precio_venta).toLocaleString('es-CL')}
               </span>
-              {producto.precioOriginal && (
-                <>
-                  <span className="text-xl text-stone-400 line-through">
-                    ${producto.precioOriginal.toFixed(2)}
-                  </span>
-                  <span className="text-sm text-emerald-600 font-medium bg-emerald-100 px-2 py-1 rounded">
-                    {descuento}% OFF
-                  </span>
-                </>
+              {producto.tipo_venta && (
+                <span className="text-sm text-gray-400 mb-2">/ {producto.tipo_venta}</span>
               )}
             </div>
 
+            {/* Disponibilidad */}
+            <div className="flex items-center gap-2">
+              <div className={`w-2.5 h-2.5 rounded-full ${enStock ? 'bg-emerald-500' : 'bg-red-400'}`} />
+              <span className={`text-sm font-medium ${enStock ? 'text-emerald-700' : 'text-red-600'}`}>
+                {enStock ? `En stock — ${producto.stock_total} disponibles` : 'Agotado'}
+              </span>
+            </div>
+
             {/* Descripción */}
-            <div>
-              <h3 className="text-lg font-semibold text-stone-800 mb-2">Descripción</h3>
-              <p className="text-stone-600 leading-relaxed">
-                {producto.descripcionCompleta}
+            {producto.descripcion && (
+              <p className="text-gray-600 dark:text-stone-400 text-base leading-relaxed border-l-4 border-emerald-200 dark:border-emerald-700 pl-4">
+                {producto.descripcion}
               </p>
+            )}
+
+            {/* CTA */}
+            <div className="pt-2 space-y-3">
+              <button
+                disabled={!enStock}
+                className={`w-full py-4 px-8 rounded-2xl text-lg font-bold flex items-center justify-center gap-3 transition-all ${
+                  enStock
+                    ? 'bg-black text-white hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-black/20'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {enStock ? 'Agregar al carrito' : 'No disponible'}
+              </button>
+
+              <Link
+                href={`/productos/${producto.id_producto}/consulta`}
+                className="w-full py-3.5 px-8 rounded-2xl text-base font-semibold border-2 border-gray-200 dark:border-stone-600 text-gray-700 dark:text-stone-300 hover:border-emerald-500 hover:text-emerald-600 transition-all text-center block"
+              >
+                Consultar sobre esta planta
+              </Link>
             </div>
 
-            {/* Características */}
-            <div>
-              <h3 className="text-lg font-semibold text-stone-800 mb-3">Características</h3>
-              <ul className="space-y-2">
-                {producto.caracteristicas.map((caracteristica, i) => (
-                  <li key={i} className="flex items-center gap-2 text-stone-600">
-                    <Check className="h-4 w-4 text-emerald-600" />
-                    {caracteristica}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Cuidados */}
-            <div>
-              <h3 className="text-lg font-semibold text-stone-800 mb-3">Cuidados</h3>
-              <ul className="space-y-2">
-                {producto.cuidados.map((cuidado, i) => (
-                  <li key={i} className="flex items-center gap-2 text-stone-600">
-                    <Leaf className="h-4 w-4 text-emerald-600" />
-                    {cuidado}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Tiempo de entrega */}
-            <div className="bg-stone-100 rounded-lg p-4">
+            {/* Trust badges */}
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100 dark:border-stone-800">
               <div className="flex items-center gap-3">
-                <Truck className="h-5 w-5 text-emerald-600" />
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <Truck className="h-5 w-5 text-emerald-600" />
+                </div>
                 <div>
-                  <p className="font-medium text-stone-800">
-                    {isPreventa ? 'Tiempo de entrega estimado' : 'Envío rápido'}
-                  </p>
-                  <p className="text-sm text-stone-600">
-                    {producto.tiempoEntrega} {isPreventa ? 'después del lanzamiento' : ''}
-                  </p>
+                  <p className="text-sm font-semibold text-black dark:text-white">Envío seguro</p>
+                  <p className="text-xs text-gray-400">A todo Chile</p>
                 </div>
               </div>
-            </div>
-
-            {/* Acciones */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <label className="text-sm font-medium text-stone-700">Cantidad:</label>
-                <div className="flex items-center border border-stone-300 rounded-lg">
-                  <button
-                    onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                    className="p-2 hover:bg-stone-100 transition-colors"
-                  >
-                    -
-                  </button>
-                  <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
-                    {cantidad}
-                  </span>
-                  <button
-                    onClick={() => setCantidad(cantidad + 1)}
-                    className="p-2 hover:bg-stone-100 transition-colors"
-                  >
-                    +
-                  </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-black dark:text-white">Garantía</p>
+                  <p className="text-xs text-gray-400">Planta saludable</p>
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                    isPreventa
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg hover:shadow-orange-500/25'
-                      : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/25'
-                  }`}
-                  disabled={producto.stock === 0 && !isPreventa}
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  {isPreventa ? 'Reservar Ahora' : 'Agregar al Carrito'}
-                </button>
-                
-                <button className="py-3 px-6 border-2 border-stone-300 text-stone-700 rounded-xl font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-colors">
-                  <Heart className="h-5 w-5" />
-                </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <Package className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-black dark:text-white">Empaque premium</p>
+                  <p className="text-xs text-gray-400">Protección extra</p>
+                </div>
               </div>
-
-              {/* Garantías */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-stone-200">
-                <div className="flex items-center gap-2 text-sm text-stone-600">
-                  <Shield className="h-4 w-4 text-emerald-600" />
-                  <span>Garantía de calidad</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <BadgeCheck className="h-5 w-5 text-emerald-600" />
                 </div>
-                <div className="flex items-center gap-2 text-sm text-stone-600">
-                  <Award className="h-4 w-4 text-emerald-600" />
-                  <span>Certificado de origen</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-stone-600">
-                  <Truck className="h-4 w-4 text-emerald-600" />
-                  <span>Envío seguro</span>
+                <div>
+                  <p className="text-sm font-semibold text-black dark:text-white">Cultivo in vitro</p>
+                  <p className="text-xs text-gray-400">Libre de plagas</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Productos Relacionados */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold text-stone-800 mb-8">Productos Relacionados</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {productos
-              .filter(p => p.id !== producto.id && p.categoria === producto.categoria)
-              .slice(0, 4)
-              .map((relacionado) => (
-                <Link
-                  key={relacionado.id}
-                  href={`/productos/${relacionado.id}`}
-                  className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all overflow-hidden"
-                >
-                  <div className="aspect-square bg-stone-100 relative">
-                    <Image
-                      src={relacionado.imagen}
-                      alt={relacionado.nombre}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform"
-                      sizes="300px"
-                    />
-                    {relacionado.disponibilidad === 'preventa' && (
-                      <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
-                        Preventa
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-stone-800 text-sm mb-1 group-hover:text-emerald-600 transition-colors">
-                      {relacionado.nombre}
-                    </h3>
-                    <p className="text-emerald-600 font-bold">
-                      ${relacionado.precio.toFixed(2)}
-                    </p>
-                  </div>
-                </Link>
+        {/* SECCIÓN DE INFO ADICIONAL */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Sun className="h-5 w-5 text-amber-500" />
+              <h3 className="font-bold text-black dark:text-white">Iluminación</h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-stone-400">Luz indirecta brillante. Evitar sol directo prolongado.</p>
+          </div>
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Droplets className="h-5 w-5 text-blue-500" />
+              <h3 className="font-bold text-black dark:text-white">Riego</h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-stone-400">Riego moderado. Mantener sustrato húmedo sin encharcar.</p>
+          </div>
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Thermometer className="h-5 w-5 text-red-400" />
+              <h3 className="font-bold text-black dark:text-white">Temperatura</h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-stone-400">Entre 18°C y 28°C. Proteger de heladas y corrientes frías.</p>
+          </div>
+        </div>
+
+        {/* PRODUCTOS RELACIONADOS */}
+        {relacionadosFiltrados.length > 0 && (
+          <div className="mt-20">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-8">
+              <h2 className="text-2xl font-bold text-black dark:text-white">También te puede interesar</h2>
+              <Link href={`/productos?categoria=${categoria}`} className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                Ver más →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+              {relacionadosFiltrados.map((rel: any) => (
+                <ProductCard key={rel.id_producto} producto={rel} />
               ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
+    </PageTransition>
   )
 }
