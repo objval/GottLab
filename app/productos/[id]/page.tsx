@@ -2,9 +2,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getProductoById, getProductos } from '@/lib/actions/productos'
-import { Leaf, Truck, Shield, Package, ArrowLeft, ShoppingCart, BadgeCheck, Droplets, Sun, Thermometer } from 'lucide-react'
+import { Leaf, Truck, Shield, Package, ArrowLeft, BadgeCheck, Droplets, Sun, Thermometer } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import PageTransition from '@/components/PageTransition'
+import AgregarAlCarritoBtn from '@/components/AgregarAlCarritoBtn'
 
 export default async function ProductoDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -144,17 +145,7 @@ export default async function ProductoDetallePage({ params }: { params: Promise<
 
             {/* CTA */}
             <div className="pt-2 space-y-3">
-              <button
-                disabled={!enStock}
-                className={`w-full py-4 px-8 rounded-2xl text-lg font-bold flex items-center justify-center gap-3 transition-all ${
-                  enStock
-                    ? 'bg-black text-white hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-black/20'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {enStock ? 'Agregar al carrito' : 'No disponible'}
-              </button>
+              <AgregarAlCarritoBtn idProducto={producto.id_producto} enStock={enStock} />
 
               <Link
                 href={`/productos/${producto.id_producto}/consulta`}

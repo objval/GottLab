@@ -72,7 +72,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
 
   return (
     <div 
-      className={`relative min-h-screen overflow-hidden touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
+      className={`relative min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen overflow-hidden [@media(orientation:landscape)_and_(max-width:1024px)]:overflow-y-auto touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -99,10 +99,10 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
             }`}
           >
             {/* Content Container */}
-            <div className="relative z-10 min-h-screen flex items-center px-4 sm:px-6 lg:px-12">
-              <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8">
+            <div className="relative z-10 min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen flex items-end [@media(orientation:landscape)_and_(max-width:1024px)]:items-center lg:items-center px-4 sm:px-6 lg:px-12 pt-20 [@media(orientation:landscape)_and_(max-width:1024px)]:pt-20 pb-8 lg:pt-0 lg:pb-0">
+              <div className="w-full max-w-7xl mx-auto flex flex-col [@media(orientation:landscape)_and_(max-width:1024px)]:flex-row [@media(orientation:landscape)_and_(max-width:1024px)]:items-center [@media(orientation:landscape)_and_(max-width:1024px)]:gap-6 lg:flex-row lg:items-center gap-4 lg:gap-8">
                 {/* Text Content */}
-                <div className="lg:w-[55%] text-green-900 mt-2 lg:mt-0 space-y-2 lg:space-y-4">
+                <div className="lg:w-[55%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[55%] text-green-900 mt-2 lg:mt-0 [@media(orientation:landscape)_and_(max-width:1024px)]:mt-0 space-y-1.5 lg:space-y-4">
                   <div className="flex items-center gap-2">
                     <Leaf className="w-5 h-5 lg:w-6 lg:h-5 text-green-600" />
                     <span className="text-sm lg:text-base font-semibold uppercase tracking-widest text-green-700">
@@ -110,7 +110,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                     </span>
                   </div>
                   
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl max-[500px]:text-4xl [@media(orientation:landscape)_and_(max-width:1024px)]:text-3xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
                     {slide.nombre}
                   </h1>
 
@@ -125,7 +125,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                   )}
                   
                   {/* Feature Pills */}
-                  <div className="flex flex-wrap gap-2 mb-6 lg:mb-8">
+                  <div className="flex flex-wrap gap-1.5 mb-2 lg:mb-8 [@media(orientation:landscape)_and_(max-width:1024px)]:mb-2">
                     {slide.stock_total > 0 && (
                       <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
                         En Stock
@@ -158,8 +158,8 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                 </div>
 
                 {/* Product Card */}
-                <div className="lg:w-[45%] flex justify-center">
-                  <div className="relative w-full max-w-[280px] sm:max-w-xs lg:max-w-md">
+                <div className="lg:w-[45%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[45%] flex justify-center">
+                  <div className="relative w-full max-w-sm [@media(orientation:landscape)_and_(max-width:1024px)]:max-w-[220px] lg:max-w-md">
                     <div className="absolute inset-0 -m-4 lg:-m-8">
                       <div className="absolute inset-0 bg-gradient-radial from-white/60 via-white/30 to-transparent rounded-3xl blur-2xl" />
                       <div className="absolute top-1/4 left-0 w-32 h-16 bg-white/40 rounded-full blur-xl" />
@@ -200,25 +200,25 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                         />
                       ))}
                     </div>
+
+                    {/* Mobile Action Buttons - directly below image */}
+                    <div className="lg:hidden flex gap-2 mt-3 w-full">
+                      <Link 
+                        href={`/productos/${slide.id_producto}`}
+                        className="flex items-center justify-center flex-1 px-4 py-3 bg-stone-800 text-white font-semibold rounded-xl shadow-lg active:scale-[0.98] transition-transform text-sm"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-1" />
+                        Ver Producto
+                      </Link>
+                      <Link 
+                        href="/productos"
+                        className="flex items-center justify-center flex-1 px-4 py-3 bg-white/90 backdrop-blur-sm text-stone-800 font-semibold rounded-xl border-2 border-stone-200 active:scale-[0.98] transition-transform text-sm"
+                      >
+                        Catálogo
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Mobile Action Buttons */}
-              <div className="lg:hidden absolute bottom-4 left-4 right-4 flex gap-2">
-                <Link 
-                  href={`/productos/${slide.id_producto}`}
-                  className="flex items-center justify-center flex-1 px-4 py-3 bg-stone-800 text-white font-semibold rounded-xl shadow-lg active:scale-[0.98] transition-transform text-sm"
-                >
-                  <ShoppingCart className="w-4 h-4 mr-1" />
-                  Ver Producto
-                </Link>
-                <Link 
-                  href="/productos"
-                  className="flex items-center justify-center flex-1 px-4 py-3 bg-white/90 backdrop-blur-sm text-stone-800 font-semibold rounded-xl border-2 border-stone-200 active:scale-[0.98] transition-transform text-sm"
-                >
-                  Catálogo
-                </Link>
               </div>
             </div>
           </div>

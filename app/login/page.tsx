@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Leaf from 'lucide-react/dist/esm/icons/leaf'
 import Mail from 'lucide-react/dist/esm/icons/mail'
@@ -8,16 +9,30 @@ import Lock from 'lucide-react/dist/esm/icons/lock'
 import Eye from 'lucide-react/dist/esm/icons/eye'
 import EyeOff from 'lucide-react/dist/esm/icons/eye-off'
 import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { signIn } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect') || '/'
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Aquí iría la lógica de autenticación
-    console.log('Login:', { email, password })
+    setError('')
+    setLoading(true)
+    const { error } = await signIn(email, password)
+    if (error) {
+      setError('Email o contraseña incorrectos')
+      setLoading(false)
+      return
+    }
+    router.push(redirect)
   }
 
   return (
@@ -107,13 +122,25 @@ export default function LoginPage() {
               </Link>
             </div>
 
+            {/* Error */}
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+            )}
+
             {/* Botón de login */}
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-900/50 flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:from-stone-400 disabled:to-stone-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-900/50 flex items-center justify-center gap-2"
             >
-              Iniciar Sesión
-              <ArrowRight className="h-4 w-4" />
+              {loading ? (
+                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Iniciar Sesión
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </button>
           </form>
         </div>

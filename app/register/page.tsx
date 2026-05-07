@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Leaf from 'lucide-react/dist/esm/icons/leaf'
@@ -11,31 +12,66 @@ import EyeOff from 'lucide-react/dist/esm/icons/eye-off'
 import User from 'lucide-react/dist/esm/icons/user'
 import Check from 'lucide-react/dist/esm/icons/check'
 import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right'
+import { supabase } from '@/lib/supabaseClient'
+
+const passwordRules = [
+  { label: 'Mínimo 8 caracteres', test: (p: string) => p.length >= 8 },
+  { label: 'Al menos una letra mayúscula', test: (p: string) => /[A-Z]/.test(p) },
+  { label: 'Al menos un número', test: (p: string) => /[0-9]/.test(p) },
+]
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
+  const [formData, setFormData] = useState({ nombre: '', email: '', password: '', confirmPassword: '' })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden')
+      setError('Las contraseñas no coinciden')
       return
     }
-    console.log('Register:', formData)
+    if (!passwordRules.every(r => r.test(formData.password))) {
+      setError('La contraseña no cumple los requisitos')
+      return
+    }
+
+    setLoading(true)
+
+    // Supabase Auth hashea la contraseña con bcrypt internamente
+    const { data, error: authError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    })
+
+    if (authError) {
+      setError(authError.message)
+      setLoading(false)
+      return
+    }
+
+    // Insertar perfil en tabla usuarios con rol 'cliente'
+    if (data.user) {
+      await supabase.from('usuarios').insert({
+        id_usuario: data.user.id,
+        nombre: formData.nombre,
+        email: formData.email,
+        rol: 'cliente',
+      })
+    }
+
+    setLoading(false)
+    setSuccess(true)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
   return (
@@ -60,6 +96,25 @@ export default function RegisterPage() {
           {/* Formulario - scroll independiente si es necesario */}
           <div className="flex items-center justify-center bg-gradient-to-br from-emerald-600 to-green-700 h-full overflow-y-auto p-4 sm:p-8">
             <div className="w-full max-w-md py-8">
+              {success ? (
+                <div className="flex flex-col items-center justify-center text-center py-12 space-y-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <Check className="h-8 w-8 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">¡Cuenta creada!</h2>
+                  <p className="text-white/80 max-w-xs">
+                    Revisa tu email para confirmar tu cuenta antes de iniciar sesión.
+                  </p>
+                  <Link
+                    href="/login"
+                    className="mt-4 px-8 py-3 bg-white text-emerald-700 font-bold rounded-xl hover:bg-emerald-50 transition-colors flex items-center gap-2"
+                  >
+                    Ir a Iniciar Sesión
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              ) : (
+              <>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="nombre" className="block text-base font-bold text-white mb-2 uppercase tracking-wide">
@@ -155,18 +210,15 @@ export default function RegisterPage() {
 
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 space-y-2">
                   <p className="text-sm text-white font-bold uppercase tracking-wide mb-2">La contraseña debe contener:</p>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Check className="h-3 w-3 text-white" />
-                    <span className="text-white/70">Mínimo 8 caracteres</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Check className="h-3 w-3 text-white" />
-                    <span className="text-white/70">Al menos una letra mayúscula</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Check className="h-3 w-3 text-white" />
-                    <span className="text-white/70">Al menos un número</span>
-                  </div>
+                  {passwordRules.map((rule) => {
+                    const ok = rule.test(formData.password)
+                    return (
+                      <div key={rule.label} className="flex items-center gap-2 text-xs">
+                        <Check className={`h-3 w-3 transition-colors ${ok ? 'text-white' : 'text-white/30'}`} />
+                        <span className={`transition-colors ${ok ? 'text-white' : 'text-white/50'}`}>{rule.label}</span>
+                      </div>
+                    )
+                  })}
                 </div>
 
                 <div className="flex items-start gap-3">
@@ -188,12 +240,23 @@ export default function RegisterPage() {
                   </label>
                 </div>
 
+                {error && (
+                  <p className="text-sm text-white bg-red-500/30 border border-red-400/40 rounded-lg px-3 py-2">{error}</p>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-bold text-lg rounded-xl transition-all hover:shadow-xl hover:shadow-white/20 flex items-center justify-center gap-2 uppercase tracking-wide"
+                  disabled={loading}
+                  className="w-full py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 disabled:bg-white/50 disabled:cursor-not-allowed font-bold text-lg rounded-xl transition-all hover:shadow-xl hover:shadow-white/20 flex items-center justify-center gap-2 uppercase tracking-wide"
                 >
-                  Crear Cuenta
-                  <ArrowRight className="h-5 w-5" />
+                  {loading ? (
+                    <span className="w-5 h-5 border-2 border-emerald-700/40 border-t-emerald-700 rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      Crear Cuenta
+                      <ArrowRight className="h-5 w-5" />
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -203,6 +266,8 @@ export default function RegisterPage() {
                   Inicia sesión aquí
                 </Link>
               </p>
+              </>
+              )}
             </div>
           </div>
         </div>

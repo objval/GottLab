@@ -3,18 +3,21 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import ShoppingCart from 'lucide-react/dist/esm/icons/shopping-cart'
 import Menu from 'lucide-react/dist/esm/icons/menu'
 import X from 'lucide-react/dist/esm/icons/x'
 import Leaf from 'lucide-react/dist/esm/icons/leaf'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from '@/components/ThemeProvider'
+import CarritoDropdown from '@/components/CarritoDropdown'
+import { useAuth } from '@/contexts/AuthContext'
+import { LayoutDashboard } from 'lucide-react'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
+  const { isAdmin, isVendedor, user } = useAuth()
 
   // Detectar scroll para cambiar estilo del navbar
   useEffect(() => {
@@ -76,8 +79,16 @@ export default function Navbar() {
               <span className={`text-xl font-bold ${isWhite ? (theme === 'dark' ? 'text-white' : 'text-stone-800') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white' : 'text-stone-900'}`}>GottLab</span>
             </Link>
 
-            {/* Desktop Links - Centro */}
-            <div className="hidden md:flex items-center justify-center space-x-8">
+            {/* Desktop Links - Centro / Announcement Bar en landscape mobile */}
+            <div className="flex items-center justify-center">
+            {/* Announcement bar en landscape mobile */}
+            {isHome && (
+              <div className="lg:hidden [@media(orientation:portrait)]:hidden flex items-center gap-1.5 bg-white/30 backdrop-blur-md border border-white/40 text-black rounded-full px-3 py-1 text-[10px] font-medium whitespace-nowrap shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Envíos a todo Chile por Correos de Chile</span>
+              </div>
+            )}
+            <div className="hidden lg:flex items-center justify-center space-x-8">
               {[
                 { href: '/', label: 'Inicio' },
                 { href: '/productos', label: 'Productos' },
@@ -102,23 +113,27 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
+            </div>
 
             {/* Desktop Actions - Derecha */}
-            <div className="hidden md:flex items-center justify-end space-x-4">
-              <div className="relative">
-                <ShoppingCart className={`h-5 w-5 cursor-pointer ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'} transition-colors`} />
-                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </div>
+            <div className="hidden lg:flex items-center justify-end space-x-4">
+              <CarritoDropdown />
 
-              <Link href="/login" className={`px-3 py-1.5 transition-colors ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'}`}>
-                Iniciar Sesión
-              </Link>
-
-              <Link href="/register" className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg">
-                Registrarse
-              </Link>
+              {(isAdmin || isVendedor) ? (
+                <Link href="/admin" className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg text-sm">
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Admin
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login" className={`px-3 py-1.5 transition-colors ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'}`}>
+                    Iniciar Sesión
+                  </Link>
+                  <Link href="/register" className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg">
+                    Registrarse
+                  </Link>
+                </>
+              )}
 
               <button
                 onClick={toggleTheme}
@@ -133,7 +148,8 @@ export default function Navbar() {
             </div>
 
             {/* Mobile buttons */}
-            <div className="md:hidden col-start-3 justify-self-end flex items-center gap-2">
+            <div className="lg:hidden col-start-3 justify-self-end flex items-center gap-2">
+              <CarritoDropdown isMobile />
               <button
                 onClick={toggleTheme}
                 className="relative w-10 h-5 rounded-full transition-colors duration-300 flex items-center px-0.5"
@@ -227,21 +243,33 @@ export default function Navbar() {
 
           {/* FOOTER */}
           <div className="p-6 border-t dark:border-stone-700 space-y-3">
-            <Link 
-              href="/login" 
-              onClick={() => setIsMenuOpen(false)}
-              className="block text-center py-3 text-stone-700 dark:text-stone-200 hover:text-green-600 font-medium"
-            >
-              Iniciar Sesión
-            </Link>
-
-            <Link 
-              href="/register" 
-              onClick={() => setIsMenuOpen(false)}
-              className="block text-center py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all"
-            >
-              Registrarse
-            </Link>
+            {(isAdmin || isVendedor) ? (
+              <Link
+                href="/admin"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg font-medium"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Panel Admin
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block text-center py-3 text-stone-700 dark:text-stone-200 hover:text-green-600 font-medium"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link 
+                  href="/register" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block text-center py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all"
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

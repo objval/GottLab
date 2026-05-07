@@ -28,12 +28,20 @@ interface ProductosProps {
   }
 }
 
+function parseCategorias(val: string): string[] {
+  if (!val || val === 'todas') return []
+  return val.split(',').filter(Boolean)
+}
+
 export default function ProductosClient({ productos, total, pagina, categorias, filtros }: ProductosProps) {
   const router = useRouter()
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
   const [inputBusqueda, setInputBusqueda] = useState(filtros.busqueda || '')
   const [filtroAbierto, setFiltroAbierto] = useState<string | null>(null)
   const [vista, setVista] = useState<VistaMode>('grid')
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<string[]>(
+    () => parseCategorias(filtros.categoria)
+  )
 
   const totalPaginas = Math.ceil(total / POR_PAGINA)
 
@@ -52,6 +60,19 @@ export default function ProductosClient({ productos, total, pagina, categorias, 
     const query = sp.toString()
     router.push(`/productos${query ? `?${query}` : ''}`)
   }, [filtros, pagina, router])
+
+  const aplicarCategoria = useCallback((cat: string) => {
+    const next = categoriasSeleccionadas.includes(cat)
+      ? categoriasSeleccionadas.filter(c => c !== cat)
+      : [...categoriasSeleccionadas, cat]
+    setCategoriasSeleccionadas(next)
+    navegar({ categoria: next.length > 0 ? next.join(',') : 'todas' })
+  }, [categoriasSeleccionadas, navegar])
+
+  const limpiarCategorias = useCallback(() => {
+    setCategoriasSeleccionadas([])
+    navegar({ categoria: 'todas' })
+  }, [navegar])
 
   const handleBusqueda = (e: React.FormEvent) => {
     e.preventDefault()
@@ -169,22 +190,40 @@ export default function ProductosClient({ productos, total, pagina, categorias, 
             {/* Categoría */}
             <div>
               <button onClick={() => toggleFiltro('categoria')} className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-stone-700 dark:text-stone-200">
-                Categoría
+                <span className="flex items-center gap-2">
+                  Categoría
+                  {categoriasSeleccionadas.length > 0 && (
+                    <span className="bg-emerald-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
+                      {categoriasSeleccionadas.length}
+                    </span>
+                  )}
+                </span>
                 <ChevronDown className={`h-4 w-4 text-stone-400 transition-transform ${filtroAbierto === 'categoria' ? 'rotate-180' : ''}`} />
               </button>
               {filtroAbierto === 'categoria' && (
-                <div className="px-4 pb-3 space-y-1">
-                  {['todas', ...categorias].map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => { navegar({ categoria: cat }); setMostrarFiltros(false) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors capitalize ${
-                        filtros.categoria === cat ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-medium' : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
-                      }`}
-                    >
-                      {cat}
+                <div className="px-4 pb-3">
+                  {categoriasSeleccionadas.length > 0 && (
+                    <button onClick={limpiarCategorias} className="text-xs text-emerald-600 dark:text-emerald-400 mb-2 hover:underline">
+                      Limpiar selección
                     </button>
-                  ))}
+                  )}
+                  <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
+                    {categorias.map((cat) => (
+                      <label key={cat} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-stone-100 dark:hover:bg-stone-800">
+                        <input
+                          type="checkbox"
+                          checked={categoriasSeleccionadas.includes(cat)}
+                          onChange={() => aplicarCategoria(cat)}
+                          className="w-3.5 h-3.5 accent-emerald-600 flex-shrink-0"
+                        />
+                        <span className={`text-sm capitalize ${
+                          categoriasSeleccionadas.includes(cat)
+                            ? 'text-emerald-800 dark:text-emerald-300 font-medium'
+                            : 'text-stone-600 dark:text-stone-400'
+                        }`}>{cat}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -256,7 +295,7 @@ export default function ProductosClient({ productos, total, pagina, categorias, 
             <div className="sticky top-20">
 
               {/* Buscador */}
-              <form onSubmit={handleBusqueda} className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-6">
+              <form onSubmit={handleBusqueda} className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-3">
                 <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-2">Buscar</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
@@ -272,28 +311,44 @@ export default function ProductosClient({ productos, total, pagina, categorias, 
               </form>
 
               {/* Categorías */}
-              <div className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-6">
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-3">Categoría</label>
-                <div className="space-y-1.5">
-                  {['todas', ...categorias].map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => navegar({ categoria: cat })}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors capitalize ${
-                        filtros.categoria === cat
-                          ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-medium'
-                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
-                      }`}
-                    >
-                      {cat}
+              <div className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-semibold text-stone-700 dark:text-stone-200">
+                    Categoría
+                    {categoriasSeleccionadas.length > 0 && (
+                      <span className="ml-2 bg-emerald-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
+                        {categoriasSeleccionadas.length}
+                      </span>
+                    )}
+                  </label>
+                  {categoriasSeleccionadas.length > 0 && (
+                    <button onClick={limpiarCategorias} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                      Limpiar
                     </button>
+                  )}
+                </div>
+                <div className="max-h-48 overflow-y-auto space-y-0.5 pr-1">
+                  {categorias.map((cat) => (
+                    <label key={cat} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-stone-100 dark:hover:bg-stone-800">
+                      <input
+                        type="checkbox"
+                        checked={categoriasSeleccionadas.includes(cat)}
+                        onChange={() => aplicarCategoria(cat)}
+                        className="w-3.5 h-3.5 accent-emerald-600 flex-shrink-0"
+                      />
+                      <span className={`text-sm capitalize ${
+                        categoriasSeleccionadas.includes(cat)
+                          ? 'text-emerald-800 dark:text-emerald-300 font-medium'
+                          : 'text-stone-600 dark:text-stone-400'
+                      }`}>{cat}</span>
+                    </label>
                   ))}
                 </div>
               </div>
 
               {/* Precio */}
-              <div className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-6">
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-3">Precio</label>
+              <div className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4 mb-3">
+                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-2">Precio</label>
                 <div className="space-y-1.5">
                   {[
                     { value: 'todos', label: 'Todos' },
@@ -319,7 +374,7 @@ export default function ProductosClient({ productos, total, pagina, categorias, 
 
               {/* Disponibilidad */}
               <div className="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-gray-200 dark:border-stone-700 p-4">
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-3">Disponibilidad</label>
+                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-200 mb-2">Disponibilidad</label>
                 <div className="space-y-1.5">
                   {[
                     { value: 'todos', label: 'Todos' },
