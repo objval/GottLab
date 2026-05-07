@@ -72,7 +72,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
 
   return (
     <div 
-      className={`relative min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen overflow-hidden [@media(orientation:landscape)_and_(max-width:1024px)]:overflow-y-auto touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
+      className={`relative h-[100svh] overflow-hidden touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -99,42 +99,42 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
             }`}
           >
             {/* Content Container */}
-            <div className="relative z-10 min-h-[100svh] [@media(orientation:landscape)_and_(max-width:1024px)]:min-h-screen flex items-end [@media(orientation:landscape)_and_(max-width:1024px)]:items-center lg:items-center px-4 sm:px-6 lg:px-12 pt-20 [@media(orientation:landscape)_and_(max-width:1024px)]:pt-20 pb-8 lg:pt-0 lg:pb-0">
-              <div className="w-full max-w-7xl mx-auto flex flex-col [@media(orientation:landscape)_and_(max-width:1024px)]:flex-row [@media(orientation:landscape)_and_(max-width:1024px)]:items-center [@media(orientation:landscape)_and_(max-width:1024px)]:gap-6 lg:flex-row lg:items-center gap-4 lg:gap-8">
+            <div className="relative z-10 h-[100svh] flex items-center px-4 sm:px-6 lg:px-12 pt-16 pb-4 lg:pt-0 lg:pb-0">
+              <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-8">
                 {/* Text Content */}
-                <div className="lg:w-[55%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[55%] text-green-900 mt-2 lg:mt-0 [@media(orientation:landscape)_and_(max-width:1024px)]:mt-0 space-y-1.5 lg:space-y-4">
+                <div className="lg:w-[55%] text-green-900 space-y-1 lg:space-y-4">
                   <div className="flex items-center gap-2">
-                    <Leaf className="w-5 h-5 lg:w-6 lg:h-5 text-green-600" />
-                    <span className="text-sm lg:text-base font-semibold uppercase tracking-widest text-green-700">
+                    <Leaf className="w-4 h-4 lg:w-6 lg:h-5 text-green-600" />
+                    <span className="text-xs lg:text-base font-semibold uppercase tracking-widest text-green-700">
                       {categoria || 'Nueva llegada'}
                     </span>
                   </div>
                   
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl max-[500px]:text-4xl [@media(orientation:landscape)_and_(max-width:1024px)]:text-3xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+                  <h1 className="text-3xl sm:text-4xl lg:text-7xl xl:text-8xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
                     {slide.nombre}
                   </h1>
 
                   {slide.nombre_cientifico && (
-                    <p className="text-sm lg:text-base text-green-700/70 italic">{slide.nombre_cientifico}</p>
+                    <p className="text-xs lg:text-base text-green-700/70 italic">{slide.nombre_cientifico}</p>
                   )}
                   
                   {slide.descripcion && (
-                    <p className="text-sm lg:text-lg text-green-800/90 max-w-lg leading-relaxed line-clamp-2">
+                    <p className="hidden sm:block text-sm lg:text-lg text-green-800/90 max-w-lg leading-relaxed line-clamp-2">
                       {slide.descripcion}
                     </p>
                   )}
                   
                   {/* Feature Pills */}
-                  <div className="flex flex-wrap gap-1.5 mb-2 lg:mb-8 [@media(orientation:landscape)_and_(max-width:1024px)]:mb-2">
+                  <div className="flex flex-wrap gap-1 lg:gap-1.5 lg:mb-8">
                     {slide.stock_total > 0 && (
-                      <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                      <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-2 py-1 lg:px-4 lg:py-2 rounded-full text-[10px] lg:text-sm font-medium text-green-700 shadow-sm">
                         En Stock
                       </span>
                     )}
-                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-2 py-1 lg:px-4 lg:py-2 rounded-full text-[10px] lg:text-sm font-medium text-green-700 shadow-sm">
                       Envío seguro
                     </span>
-                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs lg:text-sm font-medium text-green-700 shadow-sm">
+                    <span className="bg-white/90 backdrop-blur-sm border border-green-200 px-2 py-1 lg:px-4 lg:py-2 rounded-full text-[10px] lg:text-sm font-medium text-green-700 shadow-sm">
                       Cultivo in vitro
                     </span>
                   </div>
@@ -158,61 +158,61 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                 </div>
 
                 {/* Product Card */}
-                <div className="lg:w-[45%] [@media(orientation:landscape)_and_(max-width:1024px)]:w-[45%] flex justify-center">
-                  <div className="relative w-full max-w-sm [@media(orientation:landscape)_and_(max-width:1024px)]:max-w-[220px] lg:max-w-md">
-                    <div className="absolute inset-0 -m-4 lg:-m-8">
+                <div className="lg:w-[45%] flex justify-center flex-shrink-0">
+                  <div className="relative w-full max-w-[200px] sm:max-w-sm lg:max-w-md">
+                    <div className="absolute inset-0 -m-4 lg:-m-8 hidden sm:block">
                       <div className="absolute inset-0 bg-gradient-radial from-white/60 via-white/30 to-transparent rounded-3xl blur-2xl" />
                       <div className="absolute top-1/4 left-0 w-32 h-16 bg-white/40 rounded-full blur-xl" />
                       <div className="absolute top-1/3 right-0 w-24 h-12 bg-white/30 rounded-full blur-xl" />
                       <div className="absolute bottom-1/4 left-1/4 w-40 h-20 bg-white/50 rounded-full blur-2xl" />
                     </div>
                     
-                    <div className="relative bg-white/50 backdrop-blur-md rounded-2xl lg:rounded-3xl p-4 lg:p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
+                    <div className="relative bg-white/50 backdrop-blur-md rounded-2xl lg:rounded-3xl p-3 lg:p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
                       {/* Badge */}
-                      <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 bg-green-500 text-white px-3 py-1 lg:px-4 lg:py-1.5 rounded-full font-semibold text-xs lg:text-sm shadow-lg flex items-center gap-1 z-20">
+                      <div className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-green-500 text-white px-2 py-0.5 lg:px-4 lg:py-1.5 rounded-full font-semibold text-[10px] lg:text-sm shadow-lg flex items-center gap-1 z-20">
                         <Sparkles className="w-3 h-3 lg:w-4 lg:h-4" />
                         Nuevo
                       </div>
                       
-                      <div className="relative aspect-square rounded-xl lg:rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-4 border-white/80 shadow-inner">
+                      <div className="relative aspect-square rounded-xl lg:rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-2 lg:border-4 border-white/80 shadow-inner">
                         <Image
                           src={"/placeholder.avif"}
                           alt={slide.nombre}
                           fill
                           className="object-cover"
                           priority={index === 0}
-                          sizes="(max-width: 768px) 280px, 400px"
+                          sizes="(max-width: 768px) 200px, 400px"
                         />
                       </div>
                     </div>
 
                     {/* Slide Indicators - mobile */}
-                    <div className="flex justify-center gap-2 mt-4 lg:hidden">
+                    <div className="flex justify-center gap-2 mt-3 lg:hidden">
                       {slides.map((_: any, idx: number) => (
                         <button
                           key={idx}
                           onClick={() => goToSlide(idx)}
                           className={`transition-all duration-300 rounded-full ${
                             idx === currentSlide 
-                              ? 'w-6 h-2 bg-stone-700' 
-                              : 'w-2 h-2 bg-stone-400/60 hover:bg-stone-500'
+                              ? 'w-5 h-1.5 bg-stone-700' 
+                              : 'w-1.5 h-1.5 bg-stone-400/60 hover:bg-stone-500'
                           }`}
                         />
                       ))}
                     </div>
 
                     {/* Mobile Action Buttons - directly below image */}
-                    <div className="lg:hidden flex gap-2 mt-3 w-full">
+                    <div className="lg:hidden flex gap-2 mt-2 w-full">
                       <Link 
                         href={`/productos/${slide.id_producto}`}
-                        className="flex items-center justify-center flex-1 px-4 py-3 bg-stone-800 text-white font-semibold rounded-xl shadow-lg active:scale-[0.98] transition-transform text-sm"
+                        className="flex items-center justify-center flex-1 px-3 py-2.5 bg-stone-800 text-white font-semibold rounded-xl shadow-lg active:scale-[0.98] transition-transform text-xs"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-1" />
+                        <ShoppingCart className="w-3.5 h-3.5 mr-1" />
                         Ver Producto
                       </Link>
                       <Link 
                         href="/productos"
-                        className="flex items-center justify-center flex-1 px-4 py-3 bg-white/90 backdrop-blur-sm text-stone-800 font-semibold rounded-xl border-2 border-stone-200 active:scale-[0.98] transition-transform text-sm"
+                        className="flex items-center justify-center flex-1 px-3 py-2.5 bg-white/90 backdrop-blur-sm text-stone-800 font-semibold rounded-xl border-2 border-stone-200 active:scale-[0.98] transition-transform text-xs"
                       >
                         Catálogo
                       </Link>
