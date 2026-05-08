@@ -24,7 +24,7 @@ export default function NosotrosPage() {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Background Decorations */}
@@ -53,7 +53,7 @@ export default function NosotrosPage() {
                 <Leaf className="h-14 w-14 text-white" />
               </div>
               <div className="text-center">
-                <span className="text-4xl md:text-5xl font-bold text-stone-800">SO</span>
+                <span className="text-4xl md:text-5xl font-bold text-stone-800 dark:text-white">SO</span>
                 <span className="text-4xl md:text-5xl font-bold text-emerald-600">MOS</span>
               </div>
             </div>
@@ -61,28 +61,28 @@ export default function NosotrosPage() {
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
-              <div className="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Microscope className="h-8 w-8 text-emerald-600" />
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
+              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <Microscope className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-stone-800 mb-2">Laboratorio In Vitro</h3>
-              <p className="text-stone-600">Técnicas avanzadas de micropropagación</p>
+              <h3 className="text-xl font-bold text-stone-800 dark:text-white mb-2">Laboratorio In Vitro</h3>
+              <p className="text-stone-600 dark:text-stone-400">Técnicas avanzadas de micropropagación</p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
-              <div className="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Sun className="h-8 w-8 text-emerald-600" />
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
+              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <Sun className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-stone-800 mb-2">Plantas Tropicales</h3>
-              <p className="text-stone-600">Variedades cuidadosamente seleccionadas</p>
+              <h3 className="text-xl font-bold text-stone-800 dark:text-white mb-2">Plantas Tropicales</h3>
+              <p className="text-stone-600 dark:text-stone-400">Variedades cuidadosamente seleccionadas</p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
-              <div className="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <MapPin className="h-8 w-8 text-emerald-600" />
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group">
+              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <MapPin className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-stone-800 mb-2">Aclimatación Local</h3>
-              <p className="text-stone-600">Adaptadas al territorio chileno</p>
+              <h3 className="text-xl font-bold text-stone-800 dark:text-white mb-2">Aclimatación Local</h3>
+              <p className="text-stone-600 dark:text-stone-400">Adaptadas al territorio chileno</p>
             </div>
           </div>
 
@@ -103,23 +103,23 @@ export default function NosotrosPage() {
       </section>
 
       {/* Quiénes Somos Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-stone-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-800 mb-4">Quiénes Somos</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-stone-800 dark:text-white mb-4">Quiénes Somos</h2>
             <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 mx-auto rounded-full" />
           </div>
 
           <div className="prose prose-lg prose-stone mx-auto">
-            <p className="text-lg text-stone-700 leading-relaxed mb-6">
+            <p className="text-lg text-stone-700 dark:text-stone-300 leading-relaxed mb-6">
               <span className="font-bold text-emerald-600">Gott Lab</span> es un laboratorio chileno especializado en la producción in vitro de plantas ornamentales y tropicales, fundado en 2023 por dos jóvenes diseñadores y paisajistas apasionados por la botánica, el diseño del paisaje y la innovación vegetal. Nacimos con el propósito de ofrecer una alternativa nacional, sustentable y de alta calidad para el mercado hortícola y paisajístico.
             </p>
 
-            <p className="text-lg text-stone-700 leading-relaxed mb-6">
+            <p className="text-lg text-stone-700 dark:text-stone-300 leading-relaxed mb-6">
               A través de técnicas avanzadas de micropropagación, cultivamos especies cuidadosamente seleccionadas, asegurando su sanidad, vigor y adaptabilidad al entorno local. Hoy, contamos con un amplio stock de variedades tropicales y ornamentales listas para ser incorporadas a proyectos paisajísticos, viveros y colecciones botánicas.
             </p>
 
-            <p className="text-lg text-stone-700 leading-relaxed text-center italic border-l-4 border-emerald-500 pl-6 py-2 bg-emerald-50 rounded-r-lg">
+            <p className="text-lg text-stone-700 dark:text-stone-300 leading-relaxed text-center italic border-l-4 border-emerald-500 pl-6 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-r-lg">
               Nos mueve la idea de que las plantas también son cultura, diseño y biodiversidad. Por eso, nuestro trabajo busca conectar ciencia, arte y sustentabilidad en cada ejemplar que producimos.
             </p>
           </div>
@@ -160,9 +160,9 @@ export default function NosotrosPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 bg-stone-100">
+      <section className="py-16 bg-stone-100 dark:bg-stone-950">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-stone-800 dark:text-white mb-6">
             ¿Quieres conocer más sobre nosotros?
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -177,7 +177,7 @@ export default function NosotrosPage() {
               href="https://instagram.com/gottlab" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white text-stone-800 border-2 border-stone-300 px-8 py-3 rounded-lg font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-stone-300 dark:border-stone-600 px-8 py-3 rounded-lg font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-colors"
             >
               <InstagramIcon className="h-5 w-5" />
               Síguenos en Instagram

@@ -1,85 +1,72 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabaseClient'
 
-type Rol = 'admin' | 'vendedor' | 'cliente' | null
+export interface Empleado {
+  id: number
+  email: string
+  nombre: string
+  cargo: string
+}
 
 interface AuthContextType {
-  user: User | null
-  session: Session | null
-  rol: Rol
+  empleado: Empleado | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
   isVendedor: boolean
+  user: Empleado | null
+  rol: string | null
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
-  const [rol, setRol] = useState<Rol>(null)
+  const [empleado, setEmpleado] = useState<Empleado | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchRol = async (userId: string): Promise<Rol> => {
-    const { data } = await supabase
-      .from('usuarios')
-      .select('rol')
-      .eq('id_usuario', userId)
-      .single()
-    return (data?.rol as Rol) || 'cliente'
-  }
-
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        const r = await fetchRol(session.user.id)
-        setRol(r)
-      }
-      setLoading(false)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        const r = await fetchRol(session.user.id)
-        setRol(r)
-      } else {
-        setRol(null)
-      }
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    fetch('/api/auth/session')
+      .then(r => r.json())
+      .then(({ empleado }) => {
+        setEmpleado(empleado ?? null)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) return { error: error.message }
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    const data = await res.json()
+    if (!res.ok) return { error: data.error || 'Error al iniciar sesión' }
+    setEmpleado(data.empleado)
     return { error: null }
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    await fetch('/api/auth/logout', { method: 'POST' })
+    setEmpleado(null)
   }
+
+  const cargo = empleado?.cargo ?? null
+  const cargosAdmin = ['admin', 'administrador']
+  const cargosVendedor = ['vendedor', 'vendedora', ...cargosAdmin]
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
-      rol,
+      empleado,
       loading,
       signIn,
       signOut,
-      isAdmin: rol === 'admin',
-      isVendedor: rol === 'vendedor' || rol === 'admin',
+      isAdmin: cargosAdmin.includes(cargo?.toLowerCase() ?? ''),
+      isVendedor: cargosVendedor.includes(cargo?.toLowerCase() ?? ''),
+      user: empleado,
+      rol: cargo,
     }}>
       {children}
     </AuthContext.Provider>

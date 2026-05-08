@@ -55,8 +55,8 @@ export default function AdminCategorias() {
   return (
     <div className="p-6 lg:p-8 max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-white">Categorías</h1>
-        <p className="text-stone-400 text-sm">{categorias.length} categorías</p>
+        <h1 className="text-xl font-bold text-stone-900 dark:text-white">Categorías</h1>
+        <p className="text-stone-500 dark:text-stone-400 text-sm">{categorias.length} categorías</p>
       </div>
 
       {/* Agregar nueva */}
@@ -66,7 +66,7 @@ export default function AdminCategorias() {
           placeholder="Nueva categoría..."
           value={nueva}
           onChange={e => setNueva(e.target.value)}
-          className="flex-1 px-4 py-2.5 bg-stone-900 border border-stone-700 rounded-lg text-sm text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="flex-1 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-lg text-sm text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
         <button
           type="submit"
@@ -83,10 +83,10 @@ export default function AdminCategorias() {
           <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="bg-stone-900 border border-stone-800 rounded-xl divide-y divide-stone-800">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl divide-y divide-stone-100 dark:divide-stone-800">
           {categorias.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
-              <Tag className="h-8 w-8 text-stone-700 mb-2" />
+              <Tag className="h-8 w-8 text-stone-300 dark:text-stone-700 mb-2" />
               <p className="text-stone-500 text-sm">No hay categorías</p>
             </div>
           ) : categorias.map((cat) => (
@@ -97,7 +97,7 @@ export default function AdminCategorias() {
                     autoFocus
                     value={editando!.nombre}
                     onChange={e => setEditando({ id: editando!.id, nombre: e.target.value })}
-                    className="flex-1 px-3 py-1.5 bg-stone-800 border border-emerald-500 rounded-lg text-sm text-white focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-stone-50 dark:bg-stone-800 border border-emerald-500 rounded-lg text-sm text-stone-900 dark:text-white focus:outline-none"
                   />
                   <button type="submit" disabled={guardando} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">
                     Guardar
@@ -108,8 +108,8 @@ export default function AdminCategorias() {
                 </form>
               ) : (
                 <>
-                  <Tag className="h-4 w-4 text-stone-500 flex-shrink-0" />
-                  <span className="flex-1 text-sm text-white capitalize">{cat.nombre}</span>
+                  <Tag className="h-4 w-4 text-stone-400 dark:text-stone-500 flex-shrink-0" />
+                  <span className="flex-1 text-sm text-stone-900 dark:text-white capitalize">{cat.nombre}</span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => setEditando({ id: cat.id_categoria, nombre: cat.nombre })}
