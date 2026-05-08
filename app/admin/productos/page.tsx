@@ -497,6 +497,8 @@ export default function AdminProductos() {
   const [editando, setEditando] = useState<any | null>(null)
   const [creando, setCreando] = useState(false)
   const [inline, setInline] = useState<InlineCell | null>(null)
+  const [pagina, setPagina] = useState(1)
+  const POR_PAGINA = 50
   const [sortCol, setSortCol] = useState<'nombre' | 'categoria' | 'precio_venta' | 'stock_total' | 'prioridad' | 'estado' | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [sortKey, setSortKey] = useState(0)
@@ -505,6 +507,7 @@ export default function AdminProductos() {
     if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setSortCol(col); setSortDir('asc') }
     setSortKey(k => k + 1)
+    setPagina(1)
   }
 
   const cargar = async () => {
@@ -556,6 +559,9 @@ export default function AdminProductos() {
       return sortDir === 'asc' ? va - vb : vb - va
     })
 
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA))
+  const paginados = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+
   const inlineTxtCls = "w-full px-2 py-1 text-sm bg-white dark:bg-stone-800 border border-emerald-500 rounded-md text-stone-900 dark:text-white focus:outline-none"
 
   return (
@@ -580,7 +586,7 @@ export default function AdminProductos() {
           type="text"
           placeholder="Buscar producto..."
           value={busqueda}
-          onChange={e => setBusqueda(e.target.value)}
+          onChange={e => { setBusqueda(e.target.value); setPagina(1) }}
           className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-lg text-sm text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
@@ -632,7 +638,7 @@ export default function AdminProductos() {
               </tr>
             </thead>
             <tbody key={sortKey} className="divide-y divide-stone-100 dark:divide-stone-800 animate-fadeIn">
-              {filtrados.map((p) => {
+              {paginados.map((p) => {
                 const img = p.imagenes_productos?.[0]?.url
                 const cat = Array.isArray(p.categorias) ? p.categorias[0]?.nombre : p.categorias?.nombre
                 const prio = prioridadLabel(p.prioridad ?? 0)
@@ -714,12 +720,13 @@ export default function AdminProductos() {
                     </td>
 
                     {/* Precio — dblclick */}
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right whitespace-nowrap w-[140px]">
                       {isPrecio ? (
                         <input
                           autoFocus
                           type="number"
-                          className={inlineTxtCls + ' text-right w-28 ml-auto'}
+                          inputMode="decimal"
+                          className={inlineTxtCls + ' text-right w-28 ml-auto no-spin'}
                           value={(inline as any).value}
                           onChange={e => setInline({ id: p.id_producto, field: 'precio_venta', value: e.target.value })}
                           onBlur={() => guardarInline(p.id_producto, 'precio_venta', Number((inline as any).value))}
@@ -740,12 +747,13 @@ export default function AdminProductos() {
                     </td>
 
                     {/* Stock — dblclick */}
-                    <td className="px-4 py-3 text-right hidden md:table-cell">
+                    <td className="px-4 py-3 text-right whitespace-nowrap hidden md:table-cell w-[110px]">
                       {isStock ? (
                         <input
                           autoFocus
                           type="number"
-                          className={inlineTxtCls + ' text-right w-20 ml-auto'}
+                          inputMode="numeric"
+                          className={inlineTxtCls + ' text-right w-20 ml-auto no-spin'}
                           value={(inline as any).value}
                           onChange={e => setInline({ id: p.id_producto, field: 'stock_total', value: e.target.value })}
                           onBlur={() => guardarInline(p.id_producto, 'stock_total', Number((inline as any).value))}
@@ -854,6 +862,58 @@ export default function AdminProductos() {
               })}
             </tbody>
           </table>
+        {/* Paginación */}
+        {totalPaginas > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-stone-200 dark:border-stone-800">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              {(pagina - 1) * POR_PAGINA + 1}–{Math.min(pagina * POR_PAGINA, filtrados.length)} de {filtrados.length}
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPagina(1)}
+                disabled={pagina === 1}
+                className="px-2 py-1 text-xs rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >«</button>
+              <button
+                onClick={() => setPagina(p => Math.max(1, p - 1))}
+                disabled={pagina === 1}
+                className="px-2.5 py-1 text-xs rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >‹</button>
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                .filter(n => n === 1 || n === totalPaginas || Math.abs(n - pagina) <= 1)
+                .reduce<(number | '...')[]>((acc, n, i, arr) => {
+                  if (i > 0 && (n as number) - (arr[i - 1] as number) > 1) acc.push('...')
+                  acc.push(n)
+                  return acc
+                }, [])
+                .map((n, i) =>
+                  n === '...' ? (
+                    <span key={`e${i}`} className="px-1 text-stone-400 text-xs">…</span>
+                  ) : (
+                    <button
+                      key={n}
+                      onClick={() => setPagina(n as number)}
+                      className={`min-w-[28px] px-2 py-1 text-xs rounded-lg font-medium transition-colors ${
+                        pagina === n
+                          ? 'bg-emerald-600 text-white'
+                          : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                      }`}
+                    >{n}</button>
+                  )
+                )}
+              <button
+                onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
+                disabled={pagina === totalPaginas}
+                className="px-2.5 py-1 text-xs rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >›</button>
+              <button
+                onClick={() => setPagina(totalPaginas)}
+                disabled={pagina === totalPaginas}
+                className="px-2 py-1 text-xs rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >»</button>
+            </div>
+          </div>
+        )}
         </div>
       )}
 

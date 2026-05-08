@@ -4,14 +4,18 @@ import { Leaf, Droplets, TrendingUp, BadgeCheck, ArrowRight } from "lucide-react
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductCarousel from "@/components/ProductCarousel";
 import ProductCard from "@/components/ProductCard";
-import { getDestacados, getNuevos, getProductos } from "@/lib/actions/productos";
+import { getDestacados, getHeroProductos, getNuevos, getProductos } from "@/lib/actions/productos";
 
 const formatCLP = (n: number) => `$${Number(n).toLocaleString('es-CL')}`
 
 export default async function Home() {
-  const heroItems = await getNuevos(4);
-  const destacados = await getDestacados(4);
-  const { productos: catalogo } = await getProductos({ porPagina: 6 });
+  const [heroItems, nuevos, destacados, catalogoResp] = await Promise.all([
+    getHeroProductos(4),
+    getNuevos(4),
+    getDestacados(4),
+    getProductos({ porPagina: 12 })
+  ]);
+  const catalogo = catalogoResp.productos ?? [];
 
   return (
     <div className="min-h-screen bg-white dark:bg-stone-950">
@@ -64,7 +68,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Productos Destacados - Lo Nuevo */}
+      {/* Productos Lo Nuevo */}
       <section className="py-16 bg-stone-50 dark:bg-stone-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Título en div café */}
@@ -87,7 +91,7 @@ export default async function Home() {
           </div>
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {destacados.map((producto: any) => (
+            {nuevos.map((producto: any) => (
               <ProductCard key={producto.id_producto} producto={producto} />
             ))}
           </div>
@@ -104,7 +108,32 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Catálogo por prioridad */}
+      {/* Destacados / Catálogo por prioridad */}
+      {destacados.length > 0 && (
+        <section className="py-16 bg-white dark:bg-stone-950">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-stone-900 dark:text-white">Productos Destacados</h2>
+              <Link
+                href="/productos"
+                className="hidden sm:inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-sm"
+              >
+                Ver catálogo completo
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+              {destacados.map((producto: any) => (
+                <ProductCard key={producto.id_producto} producto={producto} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Carrusel catálogo */}
       {catalogo.length > 0 && <ProductCarousel productos={catalogo} />}
 
       {/* CTA Section */}

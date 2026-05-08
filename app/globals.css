@@ -42,3 +42,14 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.18s ease-out both;
 }
+
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spin[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}

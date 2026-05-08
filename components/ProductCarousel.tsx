@@ -37,6 +37,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
   const enStock = currentItem.stock_total > 0
   const cats = currentItem.categorias as any
   const categoria = Array.isArray(cats) ? (cats[0]?.nombre || '') : (cats?.nombre || '')
+  const imagenPrincipal = currentItem.imagenes_productos?.[0]?.url || "/placeholder.avif"
 
   return (
     <section className="relative py-16 bg-gradient-to-br from-stone-50 via-emerald-50/30 to-stone-100 overflow-hidden">
@@ -69,7 +70,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
               {/* Imagen */}
               <div className="relative aspect-square lg:aspect-auto lg:h-[500px] bg-stone-50">
                 <Image
-                  src={"/placeholder.avif"}
+                  src={imagenPrincipal}
                   alt={currentItem.nombre}
                   fill
                   className="object-cover"
@@ -180,7 +181,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
                 }`}
               >
                 <Image
-                  src={"/placeholder.avif"}
+                  src={item.imagenes_productos?.[0]?.url || "/placeholder.avif"}
                   alt={item.nombre}
                   fill
                   className="object-cover"

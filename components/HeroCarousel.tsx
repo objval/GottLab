@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left'
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
 import Leaf from 'lucide-react/dist/esm/icons/leaf'
@@ -20,30 +20,47 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const slides = productos.slice(0, 4)
   const total = slides.length
   const minSwipeDistance = 50
 
-  useEffect(() => {
+  const restartTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
     if (total === 0) return
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % total)
-    }, 5000)
-    return () => clearInterval(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    timerRef.current = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % total)
+    }, 3500)
+  }, [total])
+
+  useEffect(() => {
+    restartTimer()
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
+  }, [restartTimer])
+
+  useEffect(() => {
+    setCurrentSlide(0)
+  }, [total])
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length)
+    restartTimer()
   }
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+    restartTimer()
   }
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index)
+    restartTimer()
   }
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -69,6 +86,9 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
   const current = slides[currentSlide]
   const cats = current.categorias as any
   const categoria = Array.isArray(cats) ? (cats[0]?.nombre || '') : (cats?.nombre || '')
+  const imagenPrincipal = current.imagenes_productos?.[0]?.url || "/placeholder.avif"
+  const badgeLabel = current.nuevo ? 'Nuevo' : current.destacado ? 'Destacado' : `Prioridad ${current.prioridad ?? ''}`
+  const badgeColor = current.nuevo ? 'bg-green-500' : current.destacado ? 'bg-emerald-600' : 'bg-stone-700'
 
   return (
     <div 
@@ -169,14 +189,14 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                     
                     <div className="relative bg-white/50 backdrop-blur-md rounded-3xl p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
                       {/* Badge */}
-                      <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-1.5 rounded-full font-semibold text-sm shadow-lg flex items-center gap-1 z-20">
+                      <div className={`absolute -top-4 -right-4 ${badgeColor} text-white px-4 py-1.5 rounded-full font-semibold text-sm shadow-lg flex items-center gap-1 z-20`}>
                         <Sparkles className="w-4 h-4" />
-                        Nuevo
+                        {badgeLabel}
                       </div>
                       
                       <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-4 border-white/80 shadow-inner">
                         <Image
-                          src={"/placeholder.avif"}
+                          src={imagenPrincipal}
                           alt={slide.nombre}
                           fill
                           className="object-cover"
@@ -233,14 +253,14 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                 <div className="relative w-full max-w-xs mx-auto mb-4">
                   <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-3 border-2 border-white/70 shadow-2xl">
                     {/* Badge */}
-                    <div className="absolute -top-2 -right-2 bg-green-500 text-white px-3 py-1 rounded-full font-semibold text-xs shadow-lg flex items-center gap-1 z-20">
+                    <div className={`absolute -top-2 -right-2 ${badgeColor} text-white px-3 py-1 rounded-full font-semibold text-xs shadow-lg flex items-center gap-1 z-20`}>
                       <Sparkles className="w-3.5 h-3.5" />
-                      Nuevo
+                      {badgeLabel}
                     </div>
                     
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-2 border-white/80 shadow-inner">
                       <Image
-                        src={"/placeholder.avif"}
+                        src={imagenPrincipal}
                         alt={slide.nombre}
                         fill
                         className="object-cover"
