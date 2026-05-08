@@ -50,14 +50,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     item.exact ? pathname === item.href : pathname.startsWith(item.href)
 
   return (
-    <div className="min-h-screen bg-stone-100 dark:bg-stone-950 flex">
+    <div className="h-screen bg-stone-100 dark:bg-stone-950 flex overflow-hidden">
 
       {/* Sidebar */}
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex flex-col
         transform transition-transform duration-200
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
+        lg:translate-x-0 lg:static lg:z-auto lg:h-full
       `}>
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
@@ -145,7 +145,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="text-stone-900 dark:text-white font-semibold text-sm">Panel Admin</span>
         </header>
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-y-auto">
           {children}
         </main>
       </div>
