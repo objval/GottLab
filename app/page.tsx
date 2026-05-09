@@ -8,14 +8,38 @@ import { getDestacados, getHeroProductos, getNuevos, getProductos } from "@/lib/
 
 const formatCLP = (n: number) => `$${Number(n).toLocaleString('es-CL')}`
 
+const HERO_COUNT = 4;
+const NUEVOS_COUNT = 4;
+const HERO_FETCH = HERO_COUNT + 4;
+const NUEVOS_FETCH = NUEVOS_COUNT + 8;
+const CATALOGO_FETCH = 30;
+
 export default async function Home() {
-  const [heroItems, nuevos, destacados, catalogoResp] = await Promise.all([
-    getHeroProductos(4),
-    getNuevos(4),
-    getDestacados(4),
-    getProductos({ porPagina: 12 })
+  const [heroSource, nuevosSource, catalogoResp] = await Promise.all([
+    getHeroProductos(HERO_FETCH),
+    getNuevos(NUEVOS_FETCH),
+    getProductos({ porPagina: CATALOGO_FETCH })
   ]);
-  const catalogo = catalogoResp.productos ?? [];
+
+  const usedIds = new Set<number>();
+
+  const takeUnique = (items: any[], count: number) => {
+    const result: any[] = [];
+    for (const item of items) {
+      if (!item) continue;
+      if (usedIds.has(item.id_producto)) continue;
+      result.push(item);
+      usedIds.add(item.id_producto);
+      if (result.length === count) break;
+    }
+    return result;
+  };
+
+  const heroItems = takeUnique(heroSource, HERO_COUNT);
+  const nuevos = takeUnique(nuevosSource, NUEVOS_COUNT);
+
+  const catalogoRaw = catalogoResp.productos ?? [];
+  const catalogo = catalogoRaw.filter((producto: any) => !usedIds.has(producto.id_producto));
 
   return (
     <div className="min-h-screen bg-white dark:bg-stone-950">
@@ -109,30 +133,6 @@ export default async function Home() {
       </section>
 
       {/* Destacados / Catálogo por prioridad */}
-      {destacados.length > 0 && (
-        <section className="py-16 bg-white dark:bg-stone-950">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-stone-900 dark:text-white">Productos Destacados</h2>
-              <Link
-                href="/productos"
-                className="hidden sm:inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-sm"
-              >
-                Ver catálogo completo
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-              {destacados.map((producto: any) => (
-                <ProductCard key={producto.id_producto} producto={producto} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Carrusel catálogo */}
       {catalogo.length > 0 && <ProductCarousel productos={catalogo} />}
 
