@@ -1,43 +1,44 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { jwtVerify } from 'jose'
+import { verifyToken } from '@/lib/jwt'
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-dev-secret-change-in-production'
-)
+interface RouteRule {
+  prefix: string
+  roles: ('admin' | 'empleado' | 'cliente')[]
+  redirect?: string
+}
 
-const cargosPermitidos = ['admin', 'administrador', 'vendedor', 'vendedora']
+const rules: RouteRule[] = [
+  { prefix: '/admin', roles: ['admin'], redirect: '/login' },
+  { prefix: '/panel-empleado', roles: ['admin', 'empleado'], redirect: '/login' },
+  { prefix: '/mi-cuenta', roles: ['cliente'], redirect: '/login' },
+]
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const rule = rules.find(r => pathname.startsWith(r.prefix))
 
-  if (pathname.startsWith('/admin')) {
-    const token = request.cookies.get('auth_token')?.value
+  if (!rule) return NextResponse.next()
 
-    if (!token) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      url.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(url)
-    }
+  const token = request.cookies.get('auth_token')?.value
+  if (!token) {
+    const url = request.nextUrl.clone()
+    url.pathname = rule.redirect ?? '/'
+    url.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(url)
+  }
 
-    try {
-      const { payload } = await jwtVerify(token, secret)
-      const cargo = (payload.cargo as string)?.toLowerCase() ?? ''
-      if (!cargosPermitidos.includes(cargo)) {
-        return NextResponse.redirect(new URL('/', request.url))
-      }
-    } catch {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      url.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(url)
-    }
+  const payload = await verifyToken(token)
+  if (!payload || !rule.roles.includes(payload.role)) {
+    const url = request.nextUrl.clone()
+    url.pathname = rule.redirect ?? '/'
+    url.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/panel-empleado/:path*', '/mi-cuenta/:path*'],
 }

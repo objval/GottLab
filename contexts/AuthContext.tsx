@@ -1,39 +1,69 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import type { UsuarioRol } from '@/lib/jwt'
 
-export interface Empleado {
+export interface ClientePerfil {
+  id: number
+  nombre: string | null
+  apellido: string | null
+  telefono: string | null
+  rut: string | null
+}
+
+export interface EmpleadoPerfil {
+  id: number
+  nombre: string | null
+  apellido: string | null
+  telefono: string | null
+  rut: string | null
+  cargo: string | null
+  estado: string | null
+}
+
+export interface UsuarioAuth {
   id: number
   email: string
-  nombre: string
-  cargo: string
+  rol: UsuarioRol
+  nombre: string | null
+  perfil: ClientePerfil | EmpleadoPerfil | null
 }
 
 interface AuthContextType {
-  empleado: Empleado | null
+  usuario: UsuarioAuth | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
+  refresh: () => Promise<void>
   isAdmin: boolean
-  isVendedor: boolean
-  user: Empleado | null
-  rol: string | null
+  isEmpleado: boolean
+  isCliente: boolean
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [empleado, setEmpleado] = useState<Empleado | null>(null)
+  const [usuario, setUsuario] = useState<UsuarioAuth | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const fetchSession = async () => {
+    try {
+      const res = await fetch('/api/auth/session', { credentials: 'include' })
+      const data = await res.json()
+      setUsuario(data.usuario ?? null)
+    } catch {
+      setUsuario(null)
+    }
+  }
+
   useEffect(() => {
-    fetch('/api/auth/session')
-      .then(r => r.json())
-      .then(({ empleado }) => {
-        setEmpleado(empleado ?? null)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    let active = true
+    const run = async () => {
+      await fetchSession()
+      if (active) setLoading(false)
+    }
+    void run()
+    return () => { active = false }
   }, [])
 
   const signIn = async (email: string, password: string) => {
@@ -41,32 +71,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
+      credentials: 'include',
     })
     const data = await res.json()
     if (!res.ok) return { error: data.error || 'Error al iniciar sesión' }
-    setEmpleado(data.empleado)
+    setUsuario(data.usuario)
     return { error: null }
   }
 
   const signOut = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    setEmpleado(null)
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    setUsuario(null)
   }
 
-  const cargo = empleado?.cargo ?? null
-  const cargosAdmin = ['admin', 'administrador']
-  const cargosVendedor = ['vendedor', 'vendedora', ...cargosAdmin]
+  const refresh = async () => {
+    await fetchSession()
+  }
+
+  const rol = usuario?.rol ?? null
+  const isAdmin = rol === 'admin'
+  const isEmpleado = rol === 'empleado'
+  const isCliente = rol === 'cliente'
 
   return (
     <AuthContext.Provider value={{
-      empleado,
+      usuario,
       loading,
       signIn,
       signOut,
-      isAdmin: cargosAdmin.includes(cargo?.toLowerCase() ?? ''),
-      isVendedor: cargosVendedor.includes(cargo?.toLowerCase() ?? ''),
-      user: empleado,
-      rol: cargo,
+      refresh,
+      isAdmin,
+      isEmpleado,
+      isCliente,
     }}>
       {children}
     </AuthContext.Provider>

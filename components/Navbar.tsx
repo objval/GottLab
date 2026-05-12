@@ -1,23 +1,48 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Menu from 'lucide-react/dist/esm/icons/menu'
 import X from 'lucide-react/dist/esm/icons/x'
 import Leaf from 'lucide-react/dist/esm/icons/leaf'
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Sun, LayoutDashboard, LogOut, Settings } from 'lucide-react'
 import { useTheme } from '@/components/ThemeProvider'
 import CarritoDropdown from '@/components/CarritoDropdown'
-import { useAuth } from '@/contexts/AuthContext'
-import { LayoutDashboard } from 'lucide-react'
+import { useAuth, ClientePerfil, EmpleadoPerfil } from '@/contexts/AuthContext'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
+  const accountRef = useRef<HTMLDivElement | null>(null)
   const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
-  const { isAdmin, isVendedor, user } = useAuth()
+  const { usuario, isAdmin, isEmpleado, isCliente, signOut } = useAuth()
+
+  const clientePerfil = (usuario?.rol === 'cliente' ? usuario?.perfil : null) as ClientePerfil | null
+  const empleadoPerfil = (usuario && usuario.rol !== 'cliente' ? usuario.perfil : null) as EmpleadoPerfil | null
+  const fullName =
+  usuario?.nombre ??
+  clientePerfil?.nombre ??
+  empleadoPerfil?.nombre ??
+  usuario?.email;
+
+const accountName = fullName ? fullName.split(' ')[0] : null;
+
+  // Obtener iniciales del nombre completo (ej: "Sebastian Lucas Eduardo Lopez Sandoval" → "SE")
+  const getInitials = (name: string | null | undefined): string => {
+    if (!name) return 'U'
+    const words = name.trim().split(/\s+/).filter(w => w.length > 0)
+    if (words.length === 0) return 'U'
+    if (words.length === 1) return words[0][0].toUpperCase()
+    // Tomar primera letra de primera y segunda palabra (máximo 2 letras)
+    const first = words[0][0].toUpperCase()
+    const second = words[1] ? words[1][0].toUpperCase() : ''
+    return first + second
+  }
+
+  const userInitials = getInitials(fullName)
 
   // Detectar scroll para cambiar estilo del navbar
   useEffect(() => {
@@ -27,6 +52,18 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+        setAccountOpen(false)
+      }
+    }
+    if (accountOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [accountOpen])
 
   // Determinar si el navbar debe ser blanco (siempre en login/register, o al hacer scroll)
   const isAuthPage = pathname === '/login' || pathname === '/register'
@@ -119,11 +156,51 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center justify-end space-x-4">
               <CarritoDropdown />
 
-              {(isAdmin || isVendedor) ? (
+              {(isAdmin || isEmpleado) && (
                 <Link href="/admin" className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg text-sm">
                   <LayoutDashboard className="h-3.5 w-3.5" />
-                  Admin
+                  Panel
                 </Link>
+              )}
+
+              {usuario ? (
+                <div className="relative" ref={accountRef}>
+                  <button
+                    onClick={() => setAccountOpen(o => !o)}
+                    className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-semibold text-sm hover:bg-emerald-200 transition-colors"
+                    title={fullName || usuario.email}
+                  >
+                    {userInitials}
+                  </button>
+                  {accountOpen && (
+                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl shadow-lg overflow-hidden z-50">
+                      <div className="px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                        <p className="text-sm font-semibold text-stone-800 dark:text-white truncate">{accountName}</p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{usuario.email}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          href={isCliente ? '/mi-cuenta' : '/admin'}
+                          onClick={() => setAccountOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                        >
+                          <Settings className="h-4 w-4" />
+                          {isCliente ? 'Mi cuenta' : 'Ir al panel'}
+                        </Link>
+                        <button
+                          onClick={async () => {
+                            await signOut()
+                            setAccountOpen(false)
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Cerrar sesión
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
                   <Link href="/login" className={`px-3 py-1.5 transition-colors ${isWhite ? (theme === 'dark' ? 'text-white hover:text-green-400' : 'text-stone-700 hover:text-green-600') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white/90 hover:text-green-400' : 'text-stone-800 hover:text-green-700'}`}>
@@ -239,19 +316,69 @@ export default function Navbar() {
             >
               Contacto
             </Link>
+
+            {(isAdmin || isEmpleado) && (
+              <Link 
+                href="/admin"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
+              >
+                Panel admin
+              </Link>
+            )}
+
+            {!usuario ? (
+              <>
+                <Link 
+                  href="/login" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
+                >
+                  Iniciar sesión
+                </Link>
+                <Link 
+                  href="/register" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
+                >
+                  Crear cuenta
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={isCliente ? '/mi-cuenta' : '/admin'}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
+                >
+                  {isCliente ? 'Mi cuenta' : 'Panel'}
+                </Link>
+                <button
+                  onClick={async () => {
+                    await signOut()
+                    setIsMenuOpen(false)
+                  }}
+                  className="text-2xl font-medium text-red-500 hover:text-red-400 transition-colors"
+                >
+                  Cerrar sesión
+                </button>
+              </>
+            )}
           </div>
 
           {/* FOOTER */}
           <div className="p-6 border-t dark:border-stone-700 space-y-3">
-            {(isAdmin || isVendedor) ? (
-              <Link
-                href="/admin"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg font-medium"
+            {usuario ? (
+              <button
+                onClick={async () => {
+                  await signOut()
+                  setIsMenuOpen(false)
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 text-red-500 rounded-lg font-medium hover:bg-red-500/20 transition-colors"
               >
-                <LayoutDashboard className="h-4 w-4" />
-                Panel Admin
-              </Link>
+                <LogOut className="h-4 w-4" />
+                Cerrar sesión
+              </button>
             ) : (
               <>
                 <Link 

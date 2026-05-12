@@ -21,17 +21,21 @@ const navItems = [
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { empleado, rol, loading, signOut, isAdmin, isVendedor } = useAuth()
+  const { usuario, loading, signOut, isAdmin } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
+  const empleadoPerfil = (usuario?.perfil as { nombre?: string | null; apellido?: string | null; cargo?: string | null }) ?? null
+  const displayNombre = empleadoPerfil?.nombre ?? usuario?.nombre ?? usuario?.email ?? 'Usuario'
+  const displayCargo = empleadoPerfil?.cargo ?? usuario?.rol ?? 'empleado'
+
   useEffect(() => {
-    if (!loading && (!empleado || (!isAdmin && !isVendedor))) {
+    if (!loading && (!usuario || !isAdmin)) {
       router.replace('/login?redirect=/admin')
     }
-  }, [loading, empleado, isAdmin, isVendedor, router])
+  }, [loading, usuario, isAdmin, router])
 
   if (loading) {
     return (
@@ -44,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     )
   }
 
-  if (!empleado || (!isAdmin && !isVendedor)) return null
+  if (!usuario || !isAdmin) return null
 
   const isActive = (item: typeof navItems[0]) =>
     item.exact ? pathname === item.href : pathname.startsWith(item.href)
@@ -102,12 +106,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-3 px-3 py-2 mb-2">
             <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-emerald-600 dark:text-emerald-400 text-sm font-bold uppercase">
-                {empleado.nombre?.[0]}
+                {displayNombre?.[0]}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-stone-900 dark:text-white truncate">{empleado.nombre}</p>
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 capitalize">{rol}</p>
+              <p className="text-xs font-medium text-stone-900 dark:text-white truncate">{displayNombre}</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 capitalize">{displayCargo}</p>
             </div>
           </div>
           <button

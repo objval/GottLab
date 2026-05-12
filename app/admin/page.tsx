@@ -13,7 +13,7 @@ const accesosRapidos = [
 ]
 
 export default function AdminDashboard() {
-  const { user, rol, isAdmin } = useAuth()
+  const { usuario, isAdmin } = useAuth()
   const [prodStats, setProdStats] = useState<{ total: number; activos: number; stock: number } | null>(null)
 
   useEffect(() => {
@@ -43,10 +43,10 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
-          Bienvenido 👋
+          Bienvenido {usuario?.nombre}
         </h1>
         <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">
-          {user?.email} · <span className="text-emerald-600 dark:text-emerald-400 capitalize">{rol}</span>
+          {usuario?.email} · <span className="text-emerald-600 dark:text-emerald-400 capitalize">{usuario?.rol}</span>
         </p>
       </div>
 

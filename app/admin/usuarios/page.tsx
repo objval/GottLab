@@ -24,7 +24,16 @@ export default function AdminEmpleados() {
     setLoading(true)
     const { data } = await supabase
       .from('empleados')
-      .select('id_empleado, rut, nombre, email, telefono, cargo, estado')
+      .select(`
+        id_empleado,
+        rut,
+        nombre,
+        apellido,
+        telefono,
+        cargo,
+        estado,
+        usuarios:usuarios(id_usuario, email, activo, rol)
+      `)
       .order('nombre')
     setEmpleados(data || [])
     setLoading(false)
@@ -42,7 +51,8 @@ export default function AdminEmpleados() {
 
   const filtrados = empleados.filter(e =>
     e.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    e.email?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    e.apellido?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    e.usuarios?.email?.toLowerCase().includes(busqueda.toLowerCase()) ||
     e.rut?.toLowerCase().includes(busqueda.toLowerCase())
   )
 
@@ -103,7 +113,7 @@ export default function AdminEmpleados() {
                         <span className="text-stone-900 dark:text-white font-medium">{e.nombre || '—'}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-stone-500 dark:text-stone-400 hidden sm:table-cell">{e.email}</td>
+                    <td className="px-4 py-3 text-stone-500 dark:text-stone-400 hidden sm:table-cell">{e.usuarios?.email}</td>
                     <td className="px-4 py-3 text-stone-500 dark:text-stone-400 hidden lg:table-cell">{e.rut || '—'}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-full ${cc.color}`}>
