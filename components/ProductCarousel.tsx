@@ -13,7 +13,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
-  const items = productos.length > 0 ? productos : []
+  const items = productos.length > 0 ? productos.slice(0, 8) : []
 
   const nextSlide = useCallback(() => {
     if (items.length === 0) return
@@ -40,11 +40,20 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
   const imagenPrincipal = currentItem.imagenes_productos?.[0]?.url || "/placeholder.avif"
 
   return (
-    <section className="relative py-16 bg-gradient-to-br from-stone-50 via-emerald-50/30 to-stone-100 overflow-hidden">
+    <section className="relative py-16 overflow-hidden">
+      {/* Fondo con gradiente que funciona en ambos modos */}
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-white to-stone-100 dark:from-stone-900 dark:via-stone-800 dark:to-stone-900" />
+      
+      {/* Círculos decorativos con opacidad ajustada */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-green-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-green-500/10 dark:bg-green-500/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-400/5 dark:bg-emerald-400/10 rounded-full blur-3xl" />
       </div>
+      
+      {/* Borde sutil para diferenciar la sección */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-stone-300 dark:via-stone-600 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-stone-300 dark:via-stone-600 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
@@ -52,10 +61,10 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
             <Leaf className="h-4 w-4" />
             Descubre lo Nuevo
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-4">
             Nuestro Catálogo
           </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
+          <p className="text-stone-500 dark:text-stone-400 max-w-2xl mx-auto">
             Explora las últimas plantas de nuestro laboratorio
           </p>
         </div>
@@ -65,10 +74,10 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-2xl dark:shadow-black/30 overflow-hidden border border-stone-200 dark:border-stone-700">
             <div className="grid grid-cols-1 lg:grid-cols-2">
               {/* Imagen */}
-              <div className="relative aspect-square lg:aspect-auto lg:h-[500px] bg-stone-50">
+              <div className="relative aspect-square lg:aspect-auto lg:h-[500px] bg-stone-50 dark:bg-stone-900">
                 <Image
                   src={imagenPrincipal}
                   alt={currentItem.nombre}
@@ -98,34 +107,34 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
                   </span>
                 )}
 
-                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2">
+                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-stone-900 dark:text-white mb-2">
                   {currentItem.nombre}
                 </h3>
                 
                 {currentItem.nombre_cientifico && (
-                  <p className="text-gray-400 italic mb-4">{currentItem.nombre_cientifico}</p>
+                  <p className="text-stone-500 dark:text-stone-400 italic mb-4">{currentItem.nombre_cientifico}</p>
                 )}
 
                 {currentItem.descripcion && (
-                  <p className="text-gray-500 text-base mb-6 line-clamp-3">{currentItem.descripcion}</p>
+                  <p className="text-stone-600 dark:text-stone-300 text-base mb-6 line-clamp-3">{currentItem.descripcion}</p>
                 )}
 
                 <div className="flex items-end gap-3 mb-6">
-                  <span className="text-3xl md:text-4xl font-black text-black">
+                  <span className="text-3xl md:text-4xl font-black text-stone-900 dark:text-white">
                     {formatCLP(currentItem.precio_venta)}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 mb-8">
                   <div className={`w-2.5 h-2.5 rounded-full ${enStock ? 'bg-emerald-500' : 'bg-red-400'}`} />
-                  <span className={`text-sm font-medium ${enStock ? 'text-emerald-700' : 'text-red-600'}`}>
+                  <span className={`text-sm font-medium ${enStock ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                     {enStock ? `${currentItem.stock_total} disponibles` : 'Agotado'}
                   </span>
                 </div>
 
                 <Link
                   href={`/productos/${currentItem.id_producto}`}
-                  className="w-full sm:w-auto py-4 px-8 bg-black text-white rounded-2xl font-bold text-center hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/20 flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto py-4 px-8 bg-stone-900 dark:bg-emerald-600 text-white rounded-2xl font-bold text-center hover:bg-stone-800 dark:hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/20 dark:shadow-emerald-900/30 flex items-center justify-center gap-2"
                 >
                   Ver Producto
                   <ChevronRight className="h-5 w-5" />
@@ -136,7 +145,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
 
           <button
             onClick={prevSlide}
-            className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-700 hover:text-emerald-600 hover:shadow-xl transition-all z-20"
+            className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-stone-700 shadow-lg dark:shadow-black/30 rounded-full flex items-center justify-center text-stone-700 dark:text-stone-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:shadow-xl transition-all z-20"
             aria-label="Anterior"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -144,7 +153,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
           
           <button
             onClick={nextSlide}
-            className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-700 hover:text-emerald-600 hover:shadow-xl transition-all z-20"
+            className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-stone-700 shadow-lg dark:shadow-black/30 rounded-full flex items-center justify-center text-stone-700 dark:text-stone-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:shadow-xl transition-all z-20"
             aria-label="Siguiente"
           >
             <ChevronRight className="h-6 w-6" />
@@ -160,7 +169,7 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex 
                   ? 'w-8 bg-emerald-600' 
-                  : 'w-2 bg-stone-300 hover:bg-stone-400'
+                  : 'w-2 bg-stone-300 dark:bg-stone-600 hover:bg-stone-400 dark:hover:bg-stone-500'
               }`}
               aria-label={`Ir a slide ${index + 1}`}
             />
@@ -169,14 +178,14 @@ export default function ProductCarousel({ productos }: { productos: any[] }) {
 
         {/* Miniaturas desktop */}
         {items.length > 1 && (
-          <div className="hidden lg:grid grid-cols-6 gap-3 mt-8">
-            {items.slice(0, 6).map((item: any, index: number) => (
+          <div className="hidden lg:grid grid-cols-8 gap-3 mt-8">
+            {items.slice(0, 8).map((item: any, index: number) => (
               <button
                 key={item.id_producto}
                 onClick={() => setCurrentIndex(index)}
                 className={`relative aspect-[4/3] rounded-lg overflow-hidden transition-all ${
                   index === currentIndex 
-                    ? 'ring-2 ring-emerald-500 ring-offset-2' 
+                    ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-stone-900' 
                     : 'opacity-60 hover:opacity-100'
                 }`}
               >
