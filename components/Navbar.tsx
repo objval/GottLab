@@ -30,16 +30,16 @@ export default function Navbar() {
 
 const accountName = fullName ? fullName.split(' ')[0] : null;
 
-  // Obtener iniciales del nombre completo (ej: "Sebastian Lucas Eduardo Lopez Sandoval" → "SE")
+  // Obtener iniciales: primera letra del nombre + primera letra del apellido (última palabra)
   const getInitials = (name: string | null | undefined): string => {
     if (!name) return 'U'
     const words = name.trim().split(/\s+/).filter(w => w.length > 0)
     if (words.length === 0) return 'U'
     if (words.length === 1) return words[0][0].toUpperCase()
-    // Tomar primera letra de primera y segunda palabra (máximo 2 letras)
+    // Primera letra de la primera palabra (nombre) + primera letra de la última palabra (apellido)
     const first = words[0][0].toUpperCase()
-    const second = words[1] ? words[1][0].toUpperCase() : ''
-    return first + second
+    const last = words[words.length - 1][0].toUpperCase()
+    return first + last
   }
 
   const userInitials = getInitials(fullName)
