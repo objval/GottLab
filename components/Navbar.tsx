@@ -345,24 +345,13 @@ const accountName = fullName ? fullName.split(' ')[0] : null;
                 </Link>
               </>
             ) : (
-              <>
-                <Link
-                  href={isCliente ? '/mi-cuenta' : '/admin'}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
-                >
-                  {isCliente ? 'Mi cuenta' : 'Panel'}
-                </Link>
-                <button
-                  onClick={async () => {
-                    await signOut()
-                    setIsMenuOpen(false)
-                  }}
-                  className="text-2xl font-medium text-red-500 hover:text-red-400 transition-colors"
-                >
-                  Cerrar sesión
-                </button>
-              </>
+              <Link
+                href={isCliente ? '/mi-cuenta' : '/admin'}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-2xl font-medium text-stone-700 dark:text-stone-200 hover:text-green-600 transition-colors"
+              >
+                {isCliente ? 'Mi cuenta' : 'Panel'}
+              </Link>
             )}
           </div>
 
