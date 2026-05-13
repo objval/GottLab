@@ -37,6 +37,12 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ cliente })
 }
 
+// Limpiar RUT: quitar puntos pero mantener guion (12.345.678-9 -> 12345678-9)
+const cleanRUT = (rut: string | null | undefined): string | null => {
+  if (!rut) return null
+  return rut.replace(/\./g, '').trim() || null
+}
+
 export async function PUT(req: NextRequest) {
   const session = await getSessionUser(req)
   if (!session || session.role !== 'cliente') {
@@ -55,7 +61,7 @@ export async function PUT(req: NextRequest) {
       nombre: String(nombre).trim(),
       apellido: String(apellido).trim(),
       telefono: telefono ? String(telefono).trim() : null,
-      rut: rut ? String(rut).trim() : null,
+      rut: cleanRUT(rut),
     })
     .eq('id_usuario', session.userId)
     .select('id_cliente, nombre, apellido, telefono, rut')

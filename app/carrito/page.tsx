@@ -1,20 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCarrito } from '@/contexts/CarritoContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { validarCarritoParaCheckout } from '@/lib/actions/carrito'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Minus, Plus, Trash2, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Minus, Plus, Trash2, ArrowLeft, AlertCircle, Phone, IdCard, User } from 'lucide-react'
 
 export default function CarritoPage() {
   const { items, loading, actualizarCantidad, eliminarProducto, vaciar } = useCarrito()
+  const { usuario } = useAuth()
   const [validando, setValidando] = useState(false)
   const [erroresValidacion, setErroresValidacion] = useState<string[]>([])
+
+  // Verificar si el cliente tiene teléfono y RUT completados
+  const perfil = usuario?.perfil as { telefono?: string | null; rut?: string | null } | null
+  const tieneTelefono = !!perfil?.telefono?.trim()
+  const tieneRut = !!perfil?.rut?.trim()
+  const datosCompletos = tieneTelefono && tieneRut
 
   const handleProcederAlPago = async () => {
     setValidando(true)
     setErroresValidacion([])
+
+    // Validar primero los datos del usuario
+    if (!datosCompletos) {
+      const errores = []
+      if (!tieneTelefono) errores.push('Debes completar tu teléfono en Mi Cuenta para proceder con la compra')
+      if (!tieneRut) errores.push('Debes completar tu RUT en Mi Cuenta para proceder con la compra')
+      setErroresValidacion(errores)
+      setValidando(false)
+      return
+    }
 
     // TODO: Reemplazar con ID de cliente real
     const ID_CLIENTE_TEMPORAL = 1
@@ -164,6 +182,36 @@ export default function CarritoPage() {
           <div className="lg:col-span-1">
             <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6 sticky top-24">
               <h2 className="text-xl font-bold text-black dark:text-white mb-4">Resumen</h2>
+
+              {/* Alerta: Datos de usuario incompletos */}
+              {!datosCompletos && (
+                <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2 flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Datos requeridos para comprar
+                  </p>
+                  <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1.5">
+                    {!tieneTelefono && (
+                      <li className="flex items-center gap-1">
+                        <Phone className="h-3 w-3" />
+                        Falta teléfono
+                      </li>
+                    )}
+                    {!tieneRut && (
+                      <li className="flex items-center gap-1">
+                        <IdCard className="h-3 w-3" />
+                        Falta RUT
+                      </li>
+                    )}
+                  </ul>
+                  <Link
+                    href="/mi-cuenta"
+                    className="mt-3 inline-block text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 underline"
+                  >
+                    Completar datos en Mi Cuenta →
+                  </Link>
+                </div>
+              )}
               
               {/* Errores de validación */}
               {erroresValidacion.length > 0 && (
@@ -201,10 +249,10 @@ export default function CarritoPage() {
 
               <button 
                 onClick={handleProcederAlPago}
-                disabled={validando}
+                disabled={validando || !datosCompletos}
                 className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-xl"
               >
-                {validando ? 'Validando...' : 'Proceder al pago'}
+                {validando ? 'Validando...' : !datosCompletos ? 'Completa tus datos para continuar' : 'Proceder al pago'}
               </button>
 
               <Link 

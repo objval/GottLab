@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Mail from 'lucide-react/dist/esm/icons/mail'
@@ -18,6 +19,7 @@ const passwordRules = [
 ]
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     nombre: '',
@@ -63,7 +65,23 @@ export default function RegisterPage() {
         return
       }
 
-      setSuccess(true)
+      // Auto-login después del registro
+      const loginRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      if (loginRes.ok) {
+        // Redirigir a Mi Cuenta para completar datos
+        router.push('/mi-cuenta?completar=true')
+      } else {
+        // Si falla el auto-login, mostrar mensaje de éxito y pedir login manual
+        setSuccess(true)
+      }
     } catch (err) {
       setError('Ocurrió un error inesperado. Intenta nuevamente')
     } finally {
@@ -104,7 +122,7 @@ export default function RegisterPage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white">¡Cuenta creada!</h2>
                   <p className="text-white/80 max-w-xs">
-                    Tu cuenta ya está lista. Inicia sesión con tu correo y contraseña cuando quieras.
+                    Tu cuenta ya está lista. Ahora inicia sesión para completar tus datos.
                   </p>
                   <Link
                     href="/login"

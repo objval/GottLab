@@ -92,7 +92,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
 
   return (
     <div 
-      className={`relative h-[100svh] overflow-hidden touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
+      className={`relative h-[80svh] sm:h-[82svh] lg:h-[86svh] overflow-hidden touch-pan-y bg-gradient-to-br ${gradients[currentSlide % gradients.length]}`}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -114,12 +114,14 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
         {slides.map((slide: any, index: number) => (
           <div
             key={slide.id_producto}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+              index === currentSlide
+                ? 'opacity-100 z-10 scale-100'
+                : 'opacity-0 z-0 scale-[0.985]'
             }`}
           >
             {/* Content Container - Desktop */}
-            <div className="hidden lg:flex relative z-10 h-[100svh] items-center px-12">
+            <div className="hidden lg:flex relative z-10 h-full items-center px-12">
               <div className="w-full max-w-7xl mx-auto flex flex-row items-center gap-8">
                 {/* Text Content - Desktop */}
                 <div className="w-[55%] text-green-900 space-y-4">
@@ -160,7 +162,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                   </div>
 
                   {/* Desktop Buttons */}
-                  <div className="flex gap-4">
+                  <div className="mt-4 flex min-h-[72px] items-end gap-4">
                     <Link 
                       href={`/productos/${slide.id_producto}`}
                       className="inline-flex items-center justify-center px-8 py-4 bg-stone-800 text-white font-semibold rounded-xl hover:bg-stone-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
@@ -187,14 +189,14 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                       <div className="absolute bottom-1/4 left-1/4 w-40 h-20 bg-white/50 rounded-full blur-2xl" />
                     </div>
                     
-                    <div className="relative bg-white/50 backdrop-blur-md rounded-3xl p-6 border-2 border-white/70 shadow-2xl ring-4 ring-white/20">
+                    <div className="relative bg-white/20 backdrop-blur-md rounded-3xl p-4 shadow-[0_40px_120px_rgba(16,24,40,0.25)]">
                       {/* Badge */}
                       <div className={`absolute -top-4 -right-4 ${badgeColor} text-white px-4 py-1.5 rounded-full font-semibold text-sm shadow-lg flex items-center gap-1 z-20`}>
                         <Sparkles className="w-4 h-4" />
                         {badgeLabel}
                       </div>
                       
-                      <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-4 border-white/80 shadow-inner">
+                      <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60">
                         <Image
                           src={imagenPrincipal}
                           alt={slide.nombre}
@@ -211,10 +213,10 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
             </div>
 
             {/* Content Container - Mobile */}
-            <div className="lg:hidden relative z-10 h-[100svh] flex flex-col">
+            <div className="lg:hidden relative z-10 h-full flex flex-col gap-6">
               {/* Title Section - Centered vertically in available space */}
-              <div className="flex-1 flex items-center px-5 pt-20">
-                <div className="text-green-900 space-y-2">
+              <div className="flex-1 min-h-0 flex items-center px-5 pt-12 sm:pt-16">
+                <div className="text-green-900 space-y-3">
                   <div className="flex items-center gap-2">
                     <Leaf className="w-5 h-5 text-green-600" />
                     <span className="text-sm font-semibold uppercase tracking-widest text-green-700">
@@ -222,7 +224,7 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
                     </span>
                   </div>
                   
-                  <h1 className="text-4xl sm:text-5xl font-black leading-[1.05] bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+                  <h1 className="text-4xl sm:text-5xl font-black leading-[1.05] line-clamp-2 bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
                     {slide.nombre}
                   </h1>
 
@@ -248,17 +250,17 @@ export default function HeroCarousel({ productos }: { productos: any[] }) {
               </div>
 
               {/* Bottom Section - Image and Buttons fixed at bottom */}
-              <div className="px-5 pb-6">
+              <div className="px-5 pb-8 mt-auto">
                 {/* Product Image */}
-                <div className="relative w-full max-w-xs mx-auto mb-4">
-                  <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-3 border-2 border-white/70 shadow-2xl">
+                <div className="relative w-full max-w-[280px] sm:max-w-sm mx-auto mb-4">
+                  <div className="relative bg-white/30 backdrop-blur-md rounded-2xl p-3 shadow-[0_24px_60px_rgba(16,24,40,0.25)]">
                     {/* Badge */}
                     <div className={`absolute -top-2 -right-2 ${badgeColor} text-white px-3 py-1 rounded-full font-semibold text-xs shadow-lg flex items-center gap-1 z-20`}>
                       <Sparkles className="w-3.5 h-3.5" />
                       {badgeLabel}
                     </div>
                     
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60 border-2 border-white/80 shadow-inner">
+                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-b from-stone-100/60 to-stone-200/60">
                       <Image
                         src={imagenPrincipal}
                         alt={slide.nombre}

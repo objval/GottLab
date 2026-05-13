@@ -116,15 +116,15 @@ const accountName = fullName ? fullName.split(' ')[0] : null;
               <span className={`text-xl font-bold ${isWhite ? (theme === 'dark' ? 'text-white' : 'text-stone-800') : (useWhiteText || (!isHome && theme === 'dark')) ? 'text-white' : 'text-stone-900'}`}>GottLab</span>
             </Link>
 
-            {/* Desktop Links - Centro / Announcement Bar en landscape mobile */}
+            {/* Desktop Links - Centro */}
             <div className="flex items-center justify-center">
             {/* Announcement bar en landscape mobile */}
-            {isHome && (
+            {/* {isHome && (
               <div className="lg:hidden [@media(orientation:portrait)]:hidden flex items-center gap-1.5 bg-white/30 backdrop-blur-md border border-white/40 text-black rounded-full px-3 py-1 text-[10px] font-medium whitespace-nowrap shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
                 <span>Envíos a todo Chile por Correos de Chile</span>
               </div>
-            )}
+            )} */}
             <div className="hidden lg:flex items-center justify-center space-x-8">
               {[
                 { href: '/', label: 'Inicio' },
