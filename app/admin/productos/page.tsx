@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase/client'
 import { Plus, Search, Pencil, Trash2, Package, X, ImagePlus, Check, Images, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 
 const formatCLP = (n: number) => `$${Number(n).toLocaleString('es-CL')}`

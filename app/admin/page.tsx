@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase/client'
 import { Package, ShoppingCart, Users, TrendingUp, ArrowUpRight, Clock, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 

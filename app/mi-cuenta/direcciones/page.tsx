@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase/client'
 import { Plus, Trash2, Edit2, MapPin, X } from 'lucide-react'
 
 interface Direccion { id_direccion: number; alias: string | null; tipo: string | null; direccion: string | null; comuna: string | null; ciudad: string | null; region: string | null; codigo_postal: string | null }

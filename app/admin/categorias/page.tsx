@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase/client'
 import { Tag, Plus, Trash2, Pencil, Search, X, Check } from 'lucide-react'
 
 export default function AdminCategorias() {

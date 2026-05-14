@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     .eq('auth_id', user.id).maybeSingle()
 
   if (cliente) {
-    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...cliente, role: 'cliente' } })
+    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...(cliente as any), role: 'cliente' } })
   }
 
   const { data: empleado } = await supabase.from('empleados')
@@ -22,8 +22,9 @@ export async function GET(req: NextRequest) {
     .eq('auth_id', user.id).maybeSingle()
 
   if (empleado) {
-    const role = empleado.cargo?.toLowerCase() === 'admin' ? 'admin' : 'empleado'
-    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...empleado, role } })
+    const emp = empleado as any
+    const role = emp.cargo?.toLowerCase() === 'admin' ? 'admin' : 'empleado'
+    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...emp, role } })
   }
 
   return NextResponse.json({ user: { id: user.id, email: user.email }, profile: null })

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase/client'
 import { Package, ChevronRight, Calendar, CreditCard } from 'lucide-react'
 
 interface Pedido { id_pedido: number; fecha: string; estado: string; total: number; detalles?: { cantidad: number; producto: { nombre: string } }[] }
@@ -18,9 +18,12 @@ export default function PedidosPage() {
 
   useEffect(() => {
     if (!isCliente || !perfilId) { setLoading(false); return }
-    supabase.from('pedidos').select('id_pedido, fecha, estado, total').eq('id_cliente', perfilId).order('fecha', { ascending: false })
-      .then(({ data }) => { setPedidos(data || []); setLoading(false) })
-      .catch(() => setLoading(false))
+    const load = async () => {
+      const { data } = await supabase.from('pedidos').select('id_pedido, fecha, estado, total').eq('id_cliente', perfilId).order('fecha', { ascending: false })
+      setPedidos(data || [])
+      setLoading(false)
+    }
+    load()
   }, [perfilId, isCliente])
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' })
