@@ -1,44 +1,23 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/jwt'
+import { updateSession } from '@/lib/supabase/middleware'
+import { NextResponse, type NextRequest } from 'next/server'
 
-interface RouteRule {
-  prefix: string
-  roles: ('admin' | 'empleado' | 'cliente')[]
-  redirect?: string
-}
-
-const rules: RouteRule[] = [
-  { prefix: '/admin', roles: ['admin'], redirect: '/login' },
-  { prefix: '/panel-empleado', roles: ['admin', 'empleado'], redirect: '/login' },
-  { prefix: '/mi-cuenta', roles: ['cliente'], redirect: '/login' },
-]
+const protectedPrefixes = ['/admin', '/panel-empleado', '/mi-cuenta']
 
 export async function middleware(request: NextRequest) {
+  const { supabaseResponse, user } = await updateSession(request)
   const pathname = request.nextUrl.pathname
-  const rule = rules.find(r => pathname.startsWith(r.prefix))
+  const needsAuth = protectedPrefixes.some((p) => pathname.startsWith(p))
 
-  if (!rule) return NextResponse.next()
-
-  const token = request.cookies.get('auth_token')?.value
-  if (!token) {
+  if (needsAuth && !user) {
     const url = request.nextUrl.clone()
-    url.pathname = rule.redirect ?? '/'
+    url.pathname = '/login'
     url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
 
-  const payload = await verifyToken(token)
-  if (!payload || !rule.roles.includes(payload.role)) {
-    const url = request.nextUrl.clone()
-    url.pathname = rule.redirect ?? '/'
-    url.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(url)
-  }
-
-  return NextResponse.next()
+  return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/panel-empleado/:path*', '/mi-cuenta/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|placeholder.avif|.*\.(?:svg|png|jpg|jpeg|gif|webp|avif)$).*)'],
 }

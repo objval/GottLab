@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Leaf, Droplets, TrendingUp, BadgeCheck, ArrowRight } from "lucide-react";
 import HeroCarousel from "@/components/HeroCarousel";
+import HeroCarouselV2 from "@/components/HeroCarouselV2";
 import ProductCarousel from "@/components/ProductCarousel";
 import ProductCard from "@/components/ProductCard";
 import { getDestacados, getHeroProductos, getNuevos, getProductos } from "@/lib/actions/productos";
@@ -44,7 +45,8 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-stone-950">
       {/* Hero Carousel */}
-      <HeroCarousel productos={heroItems} />
+      {/* <HeroCarousel productos={heroItems} /> */}
+      {<HeroCarousel productos={heroItems} />}
 
       {/* Features Section */}
       <section className="py-8 md:py-16 bg-white dark:bg-stone-950">

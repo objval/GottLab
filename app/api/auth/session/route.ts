@@ -1,80 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase as supabaseServer } from '@/lib/supabaseServer'
-import { verifyToken, UsuarioRol } from '@/lib/jwt'
-
-interface ClienteRow {
-  id_cliente: number
-  nombre: string | null
-  apellido: string | null
-  telefono: string | null
-  rut: string | null
-}
-
-interface EmpleadoRow {
-  id_empleado: number
-  nombre: string | null
-  apellido: string | null
-  telefono: string | null
-  rut: string | null
-  cargo: string | null
-  estado: string | null
-}
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get('auth_token')?.value
-  if (!token) return NextResponse.json({ usuario: null })
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  const payload = await verifyToken(token)
-  if (!payload) return NextResponse.json({ usuario: null })
-
-  const { userId, role } = payload
-
-  const { data: usuarioData } = await supabaseServer
-    .from('usuarios')
-    .select('id_usuario, email, rol, activo')
-    .eq('id_usuario', userId)
-    .maybeSingle()
-
-  if (!usuarioData || !usuarioData.activo) {
-    return NextResponse.json({ usuario: null })
+  if (error || !user) {
+    return NextResponse.json({ user: null, profile: null })
   }
 
-  let perfil: any = null
-  let nombre: string | null = null
+  const { data: cliente } = await supabase.from('clientes')
+    .select('id_cliente, nombre, apellido, email, telefono, rut')
+    .eq('auth_id', user.id).maybeSingle()
 
-  if (role === 'cliente') {
-    const { data: clienteData } = await supabaseServer
-      .from('clientes')
-      .select('id_cliente, nombre, apellido, telefono, rut')
-      .eq('id_usuario', userId)
-      .maybeSingle()
-
-    const cliente = clienteData as ClienteRow | null
-    if (cliente) {
-      perfil = cliente
-      nombre = cliente.nombre
-    }
-  } else {
-    const { data: empleadoData } = await supabaseServer
-      .from('empleados')
-      .select('id_empleado, nombre, apellido, telefono, rut, cargo, estado')
-      .eq('id_usuario', userId)
-      .maybeSingle()
-
-    const empleado = empleadoData as EmpleadoRow | null
-    if (empleado) {
-      perfil = empleado
-      nombre = empleado.nombre
-    }
+  if (cliente) {
+    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...(cliente as any), role: 'cliente' } })
   }
 
-  return NextResponse.json({
-    usuario: {
-      id: usuarioData.id_usuario,
-      email: usuarioData.email,
-      rol: usuarioData.rol as UsuarioRol,
-      nombre,
-      perfil,
-    }
-  })
+  const { data: empleado } = await supabase.from('empleados')
+    .select('id_empleado, nombre, apellido, email, telefono, rut, cargo, estado')
+    .eq('auth_id', user.id).maybeSingle()
+
+  if (empleado) {
+    const emp = empleado as any
+    const role = emp.cargo?.toLowerCase() === 'admin' ? 'admin' : 'empleado'
+    return NextResponse.json({ user: { id: user.id, email: user.email }, profile: { ...emp, role } })
+  }
+
+  return NextResponse.json({ user: { id: user.id, email: user.email }, profile: null })
 }
